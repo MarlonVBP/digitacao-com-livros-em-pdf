@@ -126,10 +126,57 @@
       .custom-checkbox:checked + div svg {
         display: block;
       }
+
+      /* --- TECLADO VIRTUAL STYLES --- */
+      #virtual-keyboard-container {
+        transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .vk-row {
+        display: flex;
+        justify-content: center;
+        gap: 6px;
+        margin-bottom: 6px;
+      }
+      .vk-key {
+        width: 45px;
+        height: 45px;
+        background-color: #334155;
+        border-bottom: 4px solid #1e293b;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Roboto Mono", monospace;
+        font-weight: 600;
+        color: #94a3b8;
+        font-size: 1.1rem;
+        transition: all 0.2s;
+        user-select: none;
+      }
+      .vk-key.vk-space {
+        width: 300px;
+      }
+      .vk-key.vk-shift {
+        width: 80px;
+        font-size: 0.9rem;
+      }
+
+      .vk-key.active-target {
+        background-color: #3b82f6;
+        color: #ffffff;
+        border-bottom-width: 2px;
+        transform: translateY(2px) scale(1.05);
+        box-shadow: 0 0 20px rgba(59, 130, 246, 0.7);
+        z-index: 10;
+      }
+
+      .keyboard-open #page-container {
+        height: 55vh;
+      }
     </style>
   </head>
   <body
-    class="h-screen w-screen flex flex-col items-center justify-center relative overflow-hidden"
+    class="h-screen w-screen flex flex-col items-center justify-center relative overflow-hidden transition-all duration-500"
   >
     <header
       class="absolute top-0 left-0 w-full p-8 flex justify-between items-center z-20 pointer-events-none"
@@ -152,7 +199,18 @@
           <i
             class="fas fa-folder-open group-hover:scale-110 transition-transform"
           ></i>
-          <span class="hidden md:inline">Trocar PDF</span>
+          <span class="hidden xl:inline">Trocar PDF</span>
+        </button>
+
+        <button
+          id="btn-toggle-keyboard"
+          title="Mostrar Teclado Guia"
+          class="bg-indigo-900/50 hover:bg-indigo-800 backdrop-blur border border-indigo-700/50 text-indigo-200 px-3 py-2 rounded-xl flex items-center gap-2 shadow-lg transition-all group mr-4"
+        >
+          <i
+            class="fas fa-keyboard group-hover:text-white transition-colors"
+          ></i>
+          <span class="hidden xl:inline">Teclado</span>
         </button>
 
         <button
@@ -163,7 +221,7 @@
           <i
             class="fas fa-backward-step text-blue-400 group-hover:text-blue-300"
           ></i>
-          <span class="text-white hidden md:inline">Voltar</span>
+          <span class="text-white hidden lg:inline">Voltar</span>
         </button>
 
         <button
@@ -171,14 +229,14 @@
           title="Pular esta página"
           class="bg-slate-800/80 hover:bg-slate-700 backdrop-blur border border-slate-700 px-3 py-2 rounded-xl flex items-center gap-2 shadow-lg transition-all group"
         >
-          <span class="text-white hidden md:inline">Pular</span>
+          <span class="text-white hidden lg:inline">Pular</span>
           <i
             class="fas fa-forward-step text-blue-400 group-hover:text-blue-300"
           ></i>
         </button>
 
         <div
-          class="bg-slate-800/80 backdrop-blur border border-slate-700 px-4 py-2 rounded-xl flex items-center gap-2 shadow-lg"
+          class="bg-slate-800/80 backdrop-blur border border-slate-700 px-4 py-2 rounded-xl flex items-center gap-2 shadow-lg hidden md:flex"
         >
           <i class="fas fa-book text-blue-400"></i>
           <span
@@ -188,7 +246,7 @@
         </div>
 
         <div
-          class="bg-slate-800/80 backdrop-blur border border-slate-700 px-4 py-2 rounded-xl flex items-center gap-2 shadow-lg"
+          class="bg-slate-800/80 backdrop-blur border border-slate-700 px-4 py-2 rounded-xl flex items-center gap-2 shadow-lg hidden md:flex"
         >
           <i class="fas fa-bullseye text-green-400"></i>
           <span class="text-white font-bold"
@@ -207,7 +265,7 @@
 
     <div
       id="upload-screen"
-      class="flex flex-col items-center gap-6 transition-all duration-500 z-10 w-full max-w-lg"
+      class="flex flex-col items-center gap-6 transition-all duration-500 z-10 w-full max-w-lg mt-10"
     >
       <div
         class="w-full h-48 bg-slate-800/50 border-2 border-dashed border-slate-600 rounded-3xl flex flex-col items-center justify-center hover:border-blue-500 hover:bg-slate-800 cursor-pointer transition-all group shadow-2xl"
@@ -391,11 +449,11 @@
 
     <div
       id="page-container"
-      class="hidden w-full max-w-5xl h-[85vh] flex flex-col relative z-10"
+      class="hidden w-full max-w-5xl h-[85vh] flex flex-col relative z-10 transition-all duration-500"
     >
       <div
         id="page-card"
-        class="flex-1 bg-slate-800/80 backdrop-blur-sm rounded-[2.5rem] border border-slate-700 overflow-hidden relative flex flex-col"
+        class="flex-1 bg-slate-800/80 backdrop-blur-sm rounded-[2.5rem] border border-slate-700 overflow-hidden relative flex flex-col mt-12"
       >
         <div class="w-full h-1 bg-slate-700 absolute top-0 left-0">
           <div
@@ -405,7 +463,7 @@
           ></div>
         </div>
 
-        <div id="scroll-wrapper" class="flex-1 overflow-hidden p-12 md:p-20">
+        <div id="scroll-wrapper" class="flex-1 overflow-hidden p-8 md:p-16">
           <div id="typing-area" class="select-none outline-none"></div>
         </div>
 
@@ -457,6 +515,79 @@
       </div>
     </div>
 
+    <div
+      id="virtual-keyboard-container"
+      class="fixed bottom-0 left-0 w-full bg-slate-900/95 backdrop-blur-md border-t border-slate-700 p-4 transform translate-y-full z-40 flex flex-col items-center shadow-[0_-10px_40px_rgba(0,0,0,0.5)]"
+    >
+      <div class="w-full max-w-4xl">
+        <div class="vk-row">
+          <div class="vk-key" data-key="1">1</div>
+          <div class="vk-key" data-key="2">2</div>
+          <div class="vk-key" data-key="3">3</div>
+          <div class="vk-key" data-key="4">4</div>
+          <div class="vk-key" data-key="5">5</div>
+          <div class="vk-key" data-key="6">6</div>
+          <div class="vk-key" data-key="7">7</div>
+          <div class="vk-key" data-key="8">8</div>
+          <div class="vk-key" data-key="9">9</div>
+          <div class="vk-key" data-key="0">0</div>
+          <div class="vk-key" data-key="-">-</div>
+          <div class="vk-key" data-key="=">=</div>
+        </div>
+        <div class="vk-row">
+          <div class="vk-key" data-key="q">Q</div>
+          <div class="vk-key" data-key="w">W</div>
+          <div class="vk-key" data-key="e">E</div>
+          <div class="vk-key" data-key="r">R</div>
+          <div class="vk-key" data-key="t">T</div>
+          <div class="vk-key" data-key="y">Y</div>
+          <div class="vk-key" data-key="u">U</div>
+          <div class="vk-key" data-key="i">I</div>
+          <div class="vk-key" data-key="o">O</div>
+          <div class="vk-key" data-key="p">P</div>
+          <div class="vk-key" data-key="acute">
+            <div class="flex flex-col items-center text-sm leading-none">
+              <span class="text-slate-400 text-xs">`</span><span>´</span>
+            </div>
+          </div>
+        </div>
+        <div class="vk-row">
+          <div class="vk-key" data-key="a">A</div>
+          <div class="vk-key" data-key="s">S</div>
+          <div class="vk-key" data-key="d">D</div>
+          <div class="vk-key" data-key="f">F</div>
+          <div class="vk-key" data-key="g">G</div>
+          <div class="vk-key" data-key="h">H</div>
+          <div class="vk-key" data-key="j">J</div>
+          <div class="vk-key" data-key="k">K</div>
+          <div class="vk-key" data-key="l">L</div>
+          <div class="vk-key" data-key="ç">Ç</div>
+          <div class="vk-key" data-key="tilde">
+            <div class="flex flex-col items-center text-sm leading-none">
+              <span class="text-slate-400 text-xs">^</span><span>~</span>
+            </div>
+          </div>
+        </div>
+        <div class="vk-row">
+          <div class="vk-key vk-shift" data-key="shift">SHIFT</div>
+          <div class="vk-key" data-key="z">Z</div>
+          <div class="vk-key" data-key="x">X</div>
+          <div class="vk-key" data-key="c">C</div>
+          <div class="vk-key" data-key="v">V</div>
+          <div class="vk-key" data-key="b">B</div>
+          <div class="vk-key" data-key="n">N</div>
+          <div class="vk-key" data-key="m">M</div>
+          <div class="vk-key" data-key=",">,</div>
+          <div class="vk-key" data-key=".">.</div>
+          <div class="vk-key" data-key=";">;</div>
+          <div class="vk-key vk-shift" data-key="shift">SHIFT</div>
+        </div>
+        <div class="vk-row mt-2">
+          <div class="vk-key vk-space" data-key="space">ESPAÇO</div>
+        </div>
+      </div>
+    </div>
+
     <script>
       pdfjsLib.GlobalWorkerOptions.workerSrc =
         "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
@@ -469,6 +600,29 @@
       let startTime = null;
       let errors = 0;
       let isTypingEnabled = false;
+      let accentPending = false; // Estado para controlar se o usuário já apertou a tecla de acento
+
+      // --- MAPEAMENTO DE ACENTOS (Inteligência do Teclado) ---
+      const accentMap = {
+        á: { key: "acute", base: "a", reqShift: false },
+        é: { key: "acute", base: "e", reqShift: false },
+        í: { key: "acute", base: "i", reqShift: false },
+        ó: { key: "acute", base: "o", reqShift: false },
+        ú: { key: "acute", base: "u", reqShift: false },
+        à: { key: "acute", base: "a", reqShift: true }, // Crase = Shift + ´
+        è: { key: "acute", base: "e", reqShift: true },
+        ì: { key: "acute", base: "i", reqShift: true },
+        ò: { key: "acute", base: "o", reqShift: true },
+        ù: { key: "acute", base: "u", reqShift: true },
+        ã: { key: "tilde", base: "a", reqShift: false },
+        õ: { key: "tilde", base: "o", reqShift: false },
+        ñ: { key: "tilde", base: "n", reqShift: false },
+        â: { key: "tilde", base: "a", reqShift: true }, // Circunflexo = Shift + ~
+        ê: { key: "tilde", base: "e", reqShift: true },
+        î: { key: "tilde", base: "i", reqShift: true },
+        ô: { key: "tilde", base: "o", reqShift: true },
+        û: { key: "tilde", base: "u", reqShift: true },
+      };
 
       const uploadScreen = document.getElementById("upload-screen");
       const loaderScreen = document.getElementById("loader-screen");
@@ -478,6 +632,93 @@
       const nextPageOverlay = document.getElementById("next-page-overlay");
       const statsCard = document.getElementById("stats-card");
       const progressBar = document.getElementById("reading-progress");
+      const keyboardContainer = document.getElementById(
+        "virtual-keyboard-container",
+      );
+
+      // --- CONTROLE DO TECLADO VIRTUAL ---
+      document
+        .getElementById("btn-toggle-keyboard")
+        .addEventListener("click", () => {
+          const body = document.body;
+          body.classList.toggle("keyboard-open");
+
+          if (keyboardContainer.classList.contains("translate-y-full")) {
+            keyboardContainer.classList.remove("translate-y-full");
+            keyboardContainer.classList.add("translate-y-0");
+            updateVirtualKeyboardHighlight();
+          } else {
+            keyboardContainer.classList.add("translate-y-full");
+            keyboardContainer.classList.remove("translate-y-0");
+          }
+        });
+
+      function updateVirtualKeyboardHighlight() {
+        document
+          .querySelectorAll(".vk-key")
+          .forEach((key) => key.classList.remove("active-target"));
+
+        if (keyboardContainer.classList.contains("translate-y-full")) return;
+
+        const spans = document.querySelectorAll("#typing-area span");
+        if (currentIndex >= spans.length - 1) return;
+
+        let targetChar = spans[currentIndex].innerText;
+        let lowerChar = targetChar.toLowerCase();
+
+        // 1. LÓGICA DE LETRAS ACENTUADAS
+        if (accentMap[lowerChar]) {
+          const mapping = accentMap[lowerChar];
+
+          if (!accentPending) {
+            // Se ainda não apertou o acento: ilumina o acento (e o Shift se for Crase/Circunflexo)
+            const keyEl = document.querySelector(
+              `.vk-key[data-key="${mapping.key}"]`,
+            );
+            if (keyEl) keyEl.classList.add("active-target");
+
+            // Maiúscula (A) com acento que também precisa de shift? Sempre ilumina o Shift
+            if (mapping.reqShift || targetChar !== lowerChar) {
+              document
+                .querySelectorAll('.vk-key[data-key="shift"]')
+                .forEach((k) => k.classList.add("active-target"));
+            }
+          } else {
+            // Se o acento já foi apertado: ilumina a letra base
+            const baseEl = document.querySelector(
+              `.vk-key[data-key="${mapping.base}"]`,
+            );
+            if (baseEl) baseEl.classList.add("active-target");
+
+            // Se a letra base for maiúscula, ilumina o Shift novamente
+            if (targetChar !== lowerChar) {
+              document
+                .querySelectorAll('.vk-key[data-key="shift"]')
+                .forEach((k) => k.classList.add("active-target"));
+            }
+          }
+        }
+        // 2. LÓGICA DE LETRAS COMUNS
+        else {
+          let keyToFind = lowerChar;
+          if (targetChar === " ") keyToFind = "space";
+
+          const keyEl = document.querySelector(
+            `.vk-key[data-key="${keyToFind}"]`,
+          );
+          if (keyEl) keyEl.classList.add("active-target");
+
+          // Verifica se a letra pede Maiúscula (Ex: A-Z, Ç)
+          if (
+            targetChar !== targetChar.toLowerCase() &&
+            targetChar.match(/[A-ZÇ]/)
+          ) {
+            document
+              .querySelectorAll('.vk-key[data-key="shift"]')
+              .forEach((k) => k.classList.add("active-target"));
+          }
+        }
+      }
 
       // --- 1. UPLOAD E SELEÇÃO DE PÁGINA ---
       document
@@ -488,7 +729,6 @@
 
           const userStartPage =
             parseInt(document.getElementById("start-page-input").value) || 1;
-
           uploadScreen.classList.add("opacity-0");
           setTimeout(() => uploadScreen.classList.add("hidden"), 500);
 
@@ -504,11 +744,9 @@
             );
             currentPage = totalPages;
           }
-
           loadPage(currentPage);
         });
 
-      // --- Função para Voltar ao Início ---
       document
         .getElementById("btn-change-pdf")
         .addEventListener("click", () => {
@@ -526,7 +764,6 @@
         isTypingEnabled = false;
         loaderScreen.classList.remove("hidden");
         pageContainer.classList.add("hidden");
-        // Remove classes de animação antes de carregar
         pageCard.classList.remove("exiting", "exiting-reverse", "visible");
 
         nextPageOverlay.classList.remove("opacity-100", "pointer-events-auto");
@@ -538,7 +775,6 @@
         document.getElementById("page-display").innerText =
           `${pageNum} / ${totalPages}`;
         progressBar.style.width = "0%";
-
         document.getElementById("wpm-display").innerText = "0";
         document.getElementById("acc-display").innerText = "100";
 
@@ -563,7 +799,6 @@
               return;
             }
           }
-
           prepareGame(data.text);
         } catch (err) {
           alert("Erro: " + err.message);
@@ -571,30 +806,20 @@
         }
       }
 
-      // --- Função de Limpeza (Aplica os Filtros) ---
       function cleanText(text) {
         let t = text.replace(/\|/g, "I").replace(/([a-z])-\n([a-z])/g, "$1$2");
-
         const keepAccents = document.getElementById("chk-accents").checked;
         const keepPunctuation =
           document.getElementById("chk-punctuation").checked;
         const keepNumbers = document.getElementById("chk-numbers").checked;
 
-        if (!keepAccents) {
+        if (!keepAccents)
           t = t.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-        }
-
-        if (!keepPunctuation) {
+        if (!keepPunctuation)
           t = t.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()"'\[\]“”‘’]/g, "");
-        }
+        if (!keepNumbers) t = t.replace(/[0-9]/g, "");
 
-        if (!keepNumbers) {
-          t = t.replace(/[0-9]/g, "");
-        }
-
-        t = t.replace(/[^\S\r\n]+/g, " ").trim();
-
-        return t;
+        return t.replace(/[^\S\r\n]+/g, " ").trim();
       }
 
       // --- 3. RENDERIZAÇÃO VISUAL ---
@@ -603,7 +828,7 @@
         currentIndex = 0;
         errors = 0;
         startTime = null;
-
+        accentPending = false; // Resetando estado do acento
         typingArea.innerHTML = "";
         const lines = originalText.split("\n");
 
@@ -637,9 +862,26 @@
         isTypingEnabled = true;
       }
 
-      // --- 4. GAME ENGINE (Com Filtro de Maiúsculas) ---
+      // --- 4. GAME ENGINE ---
       window.addEventListener("keydown", (e) => {
         if (!isTypingEnabled) return;
+
+        // INTERCEPTA AÇÕES DO TECLADO DE ACENTO
+        // Se a tecla pressionada for puramente um acento (Dead keys), muda o estado no teclado e aguarda a letra
+        if (
+          e.key === "Dead" ||
+          e.key === "´" ||
+          e.key === "`" ||
+          e.key === "~" ||
+          e.key === "^"
+        ) {
+          accentPending = true;
+          updateVirtualKeyboardHighlight(); // Atualiza a luz do teclado para mostrar a letra agora
+          return;
+        }
+
+        if (e.key === "Shift") return; // Ignora visualmente
+
         if (e.key.length > 1 && e.key !== "Backspace") return;
         if (e.key === "Enter") return;
 
@@ -655,6 +897,7 @@
             currentIndex--;
             spans[currentIndex].className =
               "pending transition-colors duration-200";
+            accentPending = false; // Se apagou, reseta o estado de acentuação
             updateCursor();
             updateStats();
           }
@@ -665,7 +908,6 @@
 
         const targetChar = spans[currentIndex].innerText;
         const requireStrictCase = document.getElementById("chk-case").checked;
-
         let isMatch = false;
 
         if (requireStrictCase) {
@@ -676,9 +918,11 @@
 
         if (isMatch) {
           spans[currentIndex].className = "correct";
+          accentPending = false; // Reseta após acertar
         } else {
           spans[currentIndex].className = "incorrect";
           errors++;
+          accentPending = false; // Reseta se errou o combo
         }
 
         currentIndex++;
@@ -696,6 +940,7 @@
         document
           .querySelectorAll(".cursor")
           .forEach((c) => c.classList.remove("cursor"));
+
         if (spans[currentIndex]) {
           spans[currentIndex].classList.add("cursor");
           spans[currentIndex].scrollIntoView({
@@ -703,6 +948,7 @@
             block: "center",
           });
         }
+        updateVirtualKeyboardHighlight();
       }
 
       function updateStats() {
@@ -730,12 +976,11 @@
         setTimeout(() => statsCard.classList.add("scale-100"), 100);
       }
 
-      // Avançar página
       function advanceToNextPage() {
         if (currentPage < totalPages) {
           isTypingEnabled = false;
           pageCard.classList.remove("visible");
-          pageCard.classList.add("exiting"); // Animação para a esquerda
+          pageCard.classList.add("exiting");
           setTimeout(() => {
             currentPage++;
             loadPage(currentPage);
@@ -745,12 +990,11 @@
         }
       }
 
-      // NOVO: Voltar página
       function returnToPreviousPage() {
         if (currentPage > 1) {
           isTypingEnabled = false;
           pageCard.classList.remove("visible");
-          pageCard.classList.add("exiting-reverse"); // Animação para a direita
+          pageCard.classList.add("exiting-reverse");
           setTimeout(() => {
             currentPage--;
             loadPage(currentPage);
@@ -772,24 +1016,21 @@
               confirm(
                 "Deseja pular esta página sem terminar? O progresso desta folha será perdido.",
               )
-            ) {
+            )
               advanceToNextPage();
-            }
           } else {
             advanceToNextPage();
           }
         });
 
-      // NOVO: Evento do botão voltar
       document.getElementById("btn-prev-page").addEventListener("click", () => {
         if (currentIndex > 50) {
           if (
             confirm(
               "Deseja voltar para a página anterior? O progresso desta folha atual será perdido.",
             )
-          ) {
+          )
             returnToPreviousPage();
-          }
         } else {
           returnToPreviousPage();
         }

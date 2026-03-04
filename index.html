@@ -161,6 +161,15 @@
 
       /* ========================================= */
 
+      /* Ocultar barra de rolagem visualmente, mantendo a funcionalidade */
+      .no-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+      .no-scrollbar {
+        -ms-overflow-style: none; /* IE and Edge */
+        scrollbar-width: none; /* Firefox */
+      }
+
       #page-card {
         box-shadow:
           0 25px 50px -12px rgba(0, 0, 0, 0.6),
@@ -402,7 +411,7 @@
 
     <div
       id="upload-screen"
-      class="flex flex-col items-center gap-4 transition-all duration-500 z-10 w-full max-w-2xl mt-16 px-4 pb-10 overflow-y-auto"
+      class="flex flex-col items-center gap-4 transition-all duration-500 z-10 w-full max-w-2xl mt-16 px-4 pb-10 overflow-y-auto no-scrollbar"
       style="max-height: 85vh"
     >
       <div
@@ -532,6 +541,37 @@
         </div>
 
         <div class="space-y-2">
+          <label class="flex items-center space-x-3 cursor-pointer group">
+            <div class="relative flex items-center">
+              <input
+                type="checkbox"
+                id="chk-case"
+                checked
+                class="custom-checkbox opacity-0 absolute h-full w-full cursor-pointer z-10"
+              />
+              <div
+                class="w-4 h-4 md:w-5 md:h-5 bg-slate-900 border border-slate-600 rounded flex items-center justify-center transition-colors"
+              >
+                <svg
+                  class="w-3 h-3 text-white hidden pointer-events-none"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="3"
+                    d="M5 13l4 4L19 7"
+                  ></path>
+                </svg>
+              </div>
+            </div>
+            <span
+              class="text-slate-400 text-sm font-bold text-blue-300 group-hover:text-blue-200"
+              >Validar Letras Maiúsculas (Case Sensitive)</span
+            >
+          </label>
           <label class="flex items-center space-x-3 cursor-pointer group">
             <div class="relative flex items-center">
               <input
@@ -862,11 +902,10 @@
       const hiddenMobileInput = document.getElementById("mobile-hidden-input");
 
       // --- CONTROLE DE FOCO (MOBILE) ---
-      // Ao tocar na tela do jogo, foca o input invisível para abrir o teclado nativo
       pageContainer.addEventListener("click", () => {
         if (isTypingEnabled) {
           hiddenMobileInput.focus();
-          hiddenMobileInput.value = ""; // Previne acúmulo de cache no teclado nativo
+          hiddenMobileInput.value = "";
         }
       });
 
@@ -888,7 +927,7 @@
         });
 
       function updateVirtualKeyboardHighlight() {
-        if (window.innerWidth < 768) return; // Não renderiza lógica pesada de teclado no celular
+        if (window.innerWidth < 768) return;
         document
           .querySelectorAll(".vk-key")
           .forEach((key) => key.classList.remove("active-target"));
@@ -949,7 +988,7 @@
         }
       }
 
-      // --- INÍCIO RÁPIDO (TEXTOS PRÉ-DEFINIDOS) ---
+      // --- INÍCIO RÁPIDO ---
       window.startPredefined = function (type) {
         isPredefinedMode = true;
         pdfDoc = null;
@@ -963,7 +1002,6 @@
         document.getElementById("page-display").innerText = `1 / 1`;
         progressBar.style.width = "0%";
 
-        // Ocultar os botões de paginação, pois só há 1 página
         document.getElementById("btn-prev-page").classList.add("hidden");
         document
           .getElementById("btn-skip-current-page")
@@ -1018,7 +1056,7 @@
 
       // --- LEITURA DO PDF (OCR) ---
       async function loadPage(pageNum) {
-        if (isPredefinedMode) return; // Bloqueio de segurança
+        if (isPredefinedMode) return;
 
         isTypingEnabled = false;
         loaderScreen.classList.remove("hidden");
@@ -1104,7 +1142,6 @@
             div.appendChild(span);
           });
 
-          // Span de quebra de linha visual para guiar uso do Enter
           const enterSpan = document.createElement("span");
           enterSpan.innerText = "↵";
           enterSpan.className =
@@ -1123,14 +1160,14 @@
 
         setTimeout(() => {
           pageCard.classList.add("visible");
-          hiddenMobileInput.focus(); // Foca imediatamente no mobile
+          hiddenMobileInput.focus();
         }, 50);
 
         updateCursor();
         isTypingEnabled = true;
       }
 
-      // --- NÚCLEO DA LÓGICA DE DIGITAÇÃO (UNIFICADA) ---
+      // --- NÚCLEO DA LÓGICA DE DIGITAÇÃO ---
       function processGameInput(keyString) {
         if (!isTypingEnabled) return;
 
@@ -1192,11 +1229,9 @@
         if (currentIndex >= spans.length) finishPage();
       }
 
-      // EVENTO 1: Keydown (Captura Teclado Físico + Backspace/Enter em Mobile)
       hiddenMobileInput.addEventListener("keydown", (e) => {
         if (!isTypingEnabled) return;
 
-        // Controle de acentos do teclado visual
         if (
           e.key === "Dead" ||
           e.key === "´" ||
@@ -1219,12 +1254,9 @@
         }
       });
 
-      // EVENTO 2: Input (Captura digitação Mobile nativa com perfeição)
       hiddenMobileInput.addEventListener("input", (e) => {
         if (!isTypingEnabled) return;
 
-        // O Android às vezes lança eventos de input para o enter e backspace.
-        // Ignoramos aqui pois o 'keydown' já os tratou de forma mais confiável.
         if (
           e.inputType === "insertLineBreak" ||
           e.inputType === "deleteContentBackward"
@@ -1235,15 +1267,13 @@
 
         const val = hiddenMobileInput.value;
         if (val) {
-          // Itera pelas letras inseridas (útil se o corretor de smartphone colar uma palavra inteira)
           for (let i = 0; i < val.length; i++) {
             if (val[i] !== "\n") processGameInput(val[i]);
           }
         }
-        hiddenMobileInput.value = ""; // Limpa a memória do teclado
+        hiddenMobileInput.value = "";
       });
 
-      // Redireciona os keydowns globais (Desktop) para o input focado
       window.addEventListener("keydown", (e) => {
         if (isTypingEnabled && document.activeElement !== hiddenMobileInput) {
           hiddenMobileInput.focus();
@@ -1285,7 +1315,7 @@
       // --- FINALIZAÇÃO E TRANSIÇÕES ---
       function finishPage() {
         isTypingEnabled = false;
-        hiddenMobileInput.blur(); // Esconde o teclado nativo do smartphone
+        hiddenMobileInput.blur();
         nextPageOverlay.classList.remove("opacity-0", "pointer-events-none");
         nextPageOverlay.classList.add("opacity-100", "pointer-events-auto");
         setTimeout(() => statsCard.classList.remove("scale-90"), 100);
@@ -1294,7 +1324,7 @@
 
       function advanceToNextPage() {
         if (isPredefinedMode) {
-          location.reload(); // Se é modo rápido, voltar pro início
+          location.reload();
           return;
         }
         if (currentPage < totalPages) {

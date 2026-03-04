@@ -2,7 +2,10 @@
 <html lang="pt-br">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
     <title>PDF Typer Reader Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -16,7 +19,7 @@
       @import url("https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&family=Roboto+Mono:wght@400;500&display=swap");
 
       /* =========================================
-         SISTEMA DE TEMAS DE CORES (VARIÁVEIS)
+         SISTEMA DE TEMAS DE CORES
          ========================================= */
       :root {
         --th-base: #0f172a;
@@ -30,7 +33,6 @@
         --th-highlight: #fbbf24;
         --th-key: #334155;
       }
-
       [data-theme="sakura"] {
         --th-base: #2d1b2e;
         --th-dark: #1a0f1b;
@@ -43,7 +45,6 @@
         --th-highlight: #fbcfe8;
         --th-key: #701a75;
       }
-
       [data-theme="ocean"] {
         --th-base: #082f49;
         --th-dark: #042f2e;
@@ -56,7 +57,6 @@
         --th-highlight: #38bdf8;
         --th-key: #075985;
       }
-
       [data-theme="hacker"] {
         --th-base: #000000;
         --th-dark: #000000;
@@ -69,7 +69,6 @@
         --th-highlight: #10b981;
         --th-key: #064e3b;
       }
-
       [data-theme="coffee"] {
         --th-base: #3e2723;
         --th-dark: #212121;
@@ -186,7 +185,12 @@
       #typing-area {
         font-family: "Merriweather", serif;
         line-height: 2;
-        font-size: 1.4rem;
+        font-size: 1.2rem;
+      }
+      @media (min-width: 768px) {
+        #typing-area {
+          font-size: 1.4rem;
+        }
       }
 
       .line-block {
@@ -238,81 +242,108 @@
           transform: rotate(360deg);
         }
       }
-
       .custom-checkbox:checked + div svg {
         display: block;
       }
 
+      /* Teclado UI */
       #virtual-keyboard-container {
         transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
       }
       .vk-row {
         display: flex;
         justify-content: center;
-        gap: 6px;
-        margin-bottom: 6px;
+        gap: 4px;
+        margin-bottom: 4px;
+      }
+      @media (min-width: 768px) {
+        .vk-row {
+          gap: 6px;
+          margin-bottom: 6px;
+        }
       }
       .vk-key {
-        width: 45px;
-        height: 45px;
-        border-bottom: 4px solid;
-        border-radius: 8px;
+        width: 32px;
+        height: 38px;
+        border-bottom: 3px solid;
+        border-radius: 6px;
         display: flex;
         align-items: center;
         justify-content: center;
         font-family: "Roboto Mono", monospace;
         font-weight: 600;
-        font-size: 1.1rem;
+        font-size: 0.9rem;
         transition: all 0.2s;
         user-select: none;
       }
+      @media (min-width: 768px) {
+        .vk-key {
+          width: 45px;
+          height: 45px;
+          font-size: 1.1rem;
+        }
+      }
       .vk-key.vk-space {
-        width: 300px;
+        width: 200px;
       }
-      .vk-key.vk-shift {
-        width: 80px;
-        font-size: 0.9rem;
-      }
+      .vk-key.vk-shift,
       .vk-key.vk-enter {
-        width: 80px;
-        font-size: 0.9rem;
+        width: 55px;
+        font-size: 0.7rem;
+      }
+      @media (min-width: 768px) {
+        .vk-key.vk-space {
+          width: 300px;
+        }
+        .vk-key.vk-shift,
+        .vk-key.vk-enter {
+          width: 80px;
+          font-size: 0.9rem;
+        }
       }
       .keyboard-open #page-container {
-        height: 55vh;
+        height: 50vh;
       }
     </style>
   </head>
   <body
     class="h-screen w-screen flex flex-col items-center justify-center relative overflow-hidden transition-all duration-500"
   >
+    <textarea
+      id="mobile-hidden-input"
+      class="fixed top-1/2 left-1/2 opacity-0 w-[1px] h-[1px] -z-50"
+      autocomplete="off"
+      autocorrect="off"
+      autocapitalize="off"
+      spellcheck="false"
+    ></textarea>
+
     <header
-      class="absolute top-0 left-0 w-full p-8 flex justify-between items-center z-20 pointer-events-none"
+      class="absolute top-0 left-0 w-full p-4 md:p-8 flex justify-between items-center z-20 pointer-events-none"
     >
       <h1
-        class="text-2xl font-bold tracking-widest text-slate-500 pointer-events-auto"
+        class="text-xl md:text-2xl font-bold tracking-widest text-slate-500 pointer-events-auto"
       >
         PDF<span class="text-blue-500">READER</span>
       </h1>
 
       <div
-        class="flex gap-3 text-sm font-mono opacity-0 transition-opacity duration-500 pointer-events-auto flex-wrap justify-end"
+        class="flex gap-2 md:gap-3 text-xs md:text-sm font-mono opacity-0 transition-opacity duration-500 pointer-events-auto flex-wrap justify-end"
         id="stats-container"
       >
         <button
           id="btn-change-pdf"
-          title="Escolher outro PDF"
-          class="bg-red-900/40 hover:bg-red-800/80 backdrop-blur border border-red-700/50 text-red-200 px-3 py-2 rounded-xl flex items-center gap-2 shadow-lg transition-all group mr-4"
+          title="Voltar ao início"
+          class="bg-red-900/40 hover:bg-red-800/80 backdrop-blur border border-red-700/50 text-red-200 px-2 md:px-3 py-2 rounded-xl flex items-center gap-2 shadow-lg transition-all group"
         >
-          <i
-            class="fas fa-folder-open group-hover:scale-110 transition-transform"
-          ></i>
-          <span class="hidden xl:inline">Trocar PDF</span>
+          <i class="fas fa-home group-hover:scale-110 transition-transform"></i>
+          <span class="hidden xl:inline">Início</span>
         </button>
 
         <button
           id="btn-toggle-keyboard"
           title="Mostrar Teclado Guia"
-          class="bg-slate-800/80 hover:bg-slate-700 backdrop-blur border border-slate-700 px-3 py-2 rounded-xl flex items-center gap-2 shadow-lg transition-all group mr-4"
+          class="hidden md:flex bg-slate-800/80 hover:bg-slate-700 backdrop-blur border border-slate-700 px-3 py-2 rounded-xl items-center gap-2 shadow-lg transition-all group"
         >
           <i
             class="fas fa-keyboard group-hover:text-white transition-colors text-blue-400"
@@ -323,7 +354,7 @@
         <button
           id="btn-prev-page"
           title="Voltar página"
-          class="bg-slate-800/80 hover:bg-slate-700 backdrop-blur border border-slate-700 px-3 py-2 rounded-xl flex items-center gap-2 shadow-lg transition-all group"
+          class="bg-slate-800/80 hover:bg-slate-700 backdrop-blur border border-slate-700 px-2 md:px-3 py-2 rounded-xl flex items-center gap-2 shadow-lg transition-all group"
         >
           <i
             class="fas fa-backward-step text-blue-400 group-hover:text-blue-300"
@@ -334,7 +365,7 @@
         <button
           id="btn-skip-current-page"
           title="Pular esta página"
-          class="bg-slate-800/80 hover:bg-slate-700 backdrop-blur border border-slate-700 px-3 py-2 rounded-xl flex items-center gap-2 shadow-lg transition-all group"
+          class="bg-slate-800/80 hover:bg-slate-700 backdrop-blur border border-slate-700 px-2 md:px-3 py-2 rounded-xl flex items-center gap-2 shadow-lg transition-all group"
         >
           <span class="text-white hidden lg:inline">Pular</span>
           <i
@@ -343,17 +374,15 @@
         </button>
 
         <div
-          class="bg-slate-800/80 backdrop-blur border border-slate-700 px-4 py-2 rounded-xl flex items-center gap-2 shadow-lg hidden md:flex"
+          class="bg-slate-800/80 backdrop-blur border border-slate-700 px-2 md:px-4 py-2 rounded-xl flex items-center gap-1 md:gap-2 shadow-lg"
         >
           <i class="fas fa-book text-blue-400"></i>
-          <span
-            >Pág
-            <span id="page-display" class="text-white font-bold">1</span></span
-          >
+          <span class="hidden md:inline">Pág</span>
+          <span id="page-display" class="text-white font-bold">1</span>
         </div>
 
         <div
-          class="bg-slate-800/80 backdrop-blur border border-slate-700 px-4 py-2 rounded-xl flex items-center gap-2 shadow-lg hidden md:flex"
+          class="bg-slate-800/80 backdrop-blur border border-slate-700 px-2 md:px-4 py-2 rounded-xl items-center gap-1 md:gap-2 shadow-lg hidden sm:flex"
         >
           <i class="fas fa-bullseye text-green-400"></i>
           <span class="text-white font-bold"
@@ -362,76 +391,147 @@
         </div>
 
         <div
-          class="bg-slate-800/80 backdrop-blur border border-slate-700 px-4 py-2 rounded-xl flex items-center gap-2 shadow-lg"
+          class="bg-slate-800/80 backdrop-blur border border-slate-700 px-2 md:px-4 py-2 rounded-xl flex items-center gap-1 md:gap-2 shadow-lg"
         >
           <i class="fas fa-tachometer-alt text-yellow-400"></i>
-          <span id="wpm-display" class="text-white font-bold">0</span> WPM
+          <span id="wpm-display" class="text-white font-bold">0</span>
+          <span class="hidden md:inline">WPM</span>
         </div>
       </div>
     </header>
 
     <div
       id="upload-screen"
-      class="flex flex-col items-center gap-6 transition-all duration-500 z-10 w-full max-w-lg mt-10"
+      class="flex flex-col items-center gap-4 transition-all duration-500 z-10 w-full max-w-2xl mt-16 px-4 pb-10 overflow-y-auto"
+      style="max-height: 85vh"
     >
       <div
-        class="w-full h-32 bg-slate-800/50 border-2 border-dashed border-slate-600 rounded-3xl flex flex-col items-center justify-center hover:border-blue-500 hover:bg-slate-800 cursor-pointer transition-all group shadow-2xl"
-        onclick="document.getElementById('file-input').click()"
+        class="w-full bg-slate-800/80 p-5 rounded-2xl border border-slate-700 shadow-xl backdrop-blur-sm"
       >
-        <div
-          class="bg-slate-700 p-3 rounded-full mb-2 group-hover:bg-blue-600 transition-colors"
+        <h3
+          class="text-slate-300 font-bold mb-4 flex items-center gap-2 border-b border-slate-700 pb-2"
         >
-          <i class="fas fa-file-pdf text-2xl text-white"></i>
+          <i class="fas fa-bolt text-yellow-400"></i> Treino Rápido
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <button
+            onclick="startPredefined('historia')"
+            class="bg-slate-900/50 p-3 rounded-xl border border-slate-600 hover:border-blue-500 hover:bg-slate-700 transition text-left group"
+          >
+            <h4
+              class="text-blue-400 font-bold text-sm mb-1 group-hover:text-white"
+            >
+              A Jornada da Água
+            </h4>
+            <p class="text-xs text-slate-500">
+              História narrativa: problema e solução.
+            </p>
+          </button>
+          <button
+            onclick="startPredefined('tecnico')"
+            class="bg-slate-900/50 p-3 rounded-xl border border-slate-600 hover:border-blue-500 hover:bg-slate-700 transition text-left group"
+          >
+            <h4
+              class="text-blue-400 font-bold text-sm mb-1 group-hover:text-white"
+            >
+              Código Front-End
+            </h4>
+            <p class="text-xs text-slate-500">
+              Termos técnicos de desenvolvimento.
+            </p>
+          </button>
+          <button
+            onclick="startPredefined('motivacional')"
+            class="bg-slate-900/50 p-3 rounded-xl border border-slate-600 hover:border-blue-500 hover:bg-slate-700 transition text-left group"
+          >
+            <h4
+              class="text-blue-400 font-bold text-sm mb-1 group-hover:text-white"
+            >
+              Foco Total
+            </h4>
+            <p class="text-xs text-slate-500">
+              Frases de resiliência e motivação.
+            </p>
+          </button>
         </div>
-        <p class="text-lg font-medium text-slate-200">Carregar Livro PDF</p>
       </div>
 
       <div
-        class="w-full bg-slate-800/80 p-6 rounded-2xl border border-slate-700 shadow-xl backdrop-blur-sm"
+        class="w-full flex items-center justify-center gap-4 opacity-50 my-2"
+      >
+        <div class="h-px bg-slate-500 flex-1"></div>
+        <span class="text-sm font-bold text-slate-400"
+          >OU SUBIR UM ARQUIVO</span
+        >
+        <div class="h-px bg-slate-500 flex-1"></div>
+      </div>
+
+      <div
+        class="w-full h-24 md:h-32 bg-slate-800/50 border-2 border-dashed border-slate-600 rounded-3xl flex flex-col items-center justify-center hover:border-blue-500 hover:bg-slate-800 cursor-pointer transition-all group shadow-xl"
+        onclick="document.getElementById('file-input').click()"
+      >
+        <div class="flex items-center gap-4">
+          <div
+            class="bg-slate-700 p-3 rounded-full group-hover:bg-blue-600 transition-colors"
+          >
+            <i class="fas fa-file-pdf text-xl text-white"></i>
+          </div>
+          <div>
+            <p class="text-lg font-medium text-slate-200">Carregar seu PDF</p>
+            <p class="text-xs text-slate-500 hidden md:block">
+              Motor Tesseract IA incluído
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="w-full bg-slate-800/80 p-5 rounded-2xl border border-slate-700 shadow-xl backdrop-blur-sm"
       >
         <h3
           class="text-slate-300 font-bold mb-4 border-b border-slate-700 pb-2 flex items-center gap-2"
         >
-          <i class="fas fa-sliders-h text-blue-400"></i> Configurações de
-          Leitura
+          <i class="fas fa-sliders-h text-blue-400"></i> Configurações Base
         </h3>
 
-        <div
-          class="flex justify-between items-center mb-3 bg-slate-900/50 p-3 rounded-xl border border-slate-700/50"
-        >
-          <span
-            class="text-slate-400 font-medium text-sm flex items-center gap-2"
-            ><i class="fas fa-palette"></i> Tema Visual:</span
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div
+            class="flex justify-between items-center bg-slate-900/50 p-2.5 rounded-xl border border-slate-700/50"
           >
-          <select
-            id="theme-selector"
-            class="bg-slate-900 text-white w-40 p-1.5 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500 font-bold border border-slate-600"
+            <span
+              class="text-slate-400 font-medium text-sm flex items-center gap-2"
+              ><i class="fas fa-palette"></i> Tema:</span
+            >
+            <select
+              id="theme-selector"
+              class="bg-slate-900 text-white w-32 p-1.5 rounded-lg text-xs outline-none focus:ring-2 focus:ring-blue-500 font-bold border border-slate-600"
+            >
+              <option value="slate">Slate (Padrão)</option>
+              <option value="sakura">Sakura (Feminino)</option>
+              <option value="ocean">Ocean (Masculino)</option>
+              <option value="coffee">Coffee (Suave)</option>
+              <option value="hacker">Hacker (Foco)</option>
+            </select>
+          </div>
+
+          <div
+            class="flex justify-between items-center bg-slate-900/50 p-2.5 rounded-xl border border-slate-700/50"
           >
-            <option value="slate">Slate (Padrão)</option>
-            <option value="sakura">Sakura (Feminino)</option>
-            <option value="ocean">Ocean (Masculino)</option>
-            <option value="coffee">Coffee (Aconchegante)</option>
-            <option value="hacker">Hacker (Foco)</option>
-          </select>
+            <span
+              class="text-slate-400 font-medium text-sm flex items-center gap-2"
+              ><i class="fas fa-file-alt"></i> Iniciar pág:</span
+            >
+            <input
+              type="number"
+              id="start-page-input"
+              value="1"
+              min="1"
+              class="bg-slate-900 text-white w-20 p-1.5 rounded-lg text-center outline-none focus:ring-2 focus:ring-blue-500 font-bold border border-slate-600"
+            />
+          </div>
         </div>
 
-        <div
-          class="flex justify-between items-center mb-5 bg-slate-900/50 p-3 rounded-xl border border-slate-700/50"
-        >
-          <span
-            class="text-slate-400 font-medium text-sm flex items-center gap-2"
-            ><i class="fas fa-file-alt"></i> Página inicial:</span
-          >
-          <input
-            type="number"
-            id="start-page-input"
-            value="1"
-            min="1"
-            class="bg-slate-900 text-white w-20 p-1.5 rounded-lg text-center outline-none focus:ring-2 focus:ring-blue-500 font-bold border border-slate-600"
-          />
-        </div>
-
-        <div class="space-y-3">
+        <div class="space-y-2">
           <label class="flex items-center space-x-3 cursor-pointer group">
             <div class="relative flex items-center">
               <input
@@ -441,7 +541,7 @@
                 class="custom-checkbox opacity-0 absolute h-full w-full cursor-pointer z-10"
               />
               <div
-                class="w-5 h-5 bg-slate-900 border border-slate-600 rounded flex items-center justify-center transition-colors"
+                class="w-4 h-4 md:w-5 md:h-5 bg-slate-900 border border-slate-600 rounded flex items-center justify-center transition-colors"
               >
                 <svg
                   class="w-3 h-3 text-white hidden pointer-events-none"
@@ -462,7 +562,6 @@
               >Manter Acentos (á, ç, ê)</span
             >
           </label>
-
           <label class="flex items-center space-x-3 cursor-pointer group">
             <div class="relative flex items-center">
               <input
@@ -472,7 +571,7 @@
                 class="custom-checkbox opacity-0 absolute h-full w-full cursor-pointer z-10"
               />
               <div
-                class="w-5 h-5 bg-slate-900 border border-slate-600 rounded flex items-center justify-center transition-colors"
+                class="w-4 h-4 md:w-5 md:h-5 bg-slate-900 border border-slate-600 rounded flex items-center justify-center transition-colors"
               >
                 <svg
                   class="w-3 h-3 text-white hidden pointer-events-none"
@@ -493,7 +592,6 @@
               >Manter Pontuação (, . ! ?)</span
             >
           </label>
-
           <label class="flex items-center space-x-3 cursor-pointer group">
             <div class="relative flex items-center">
               <input
@@ -503,7 +601,7 @@
                 class="custom-checkbox opacity-0 absolute h-full w-full cursor-pointer z-10"
               />
               <div
-                class="w-5 h-5 bg-slate-900 border border-slate-600 rounded flex items-center justify-center transition-colors"
+                class="w-4 h-4 md:w-5 md:h-5 bg-slate-900 border border-slate-600 rounded flex items-center justify-center transition-colors"
               >
                 <svg
                   class="w-3 h-3 text-white hidden pointer-events-none"
@@ -524,39 +622,8 @@
               >Manter Números (0-9)</span
             >
           </label>
-
-          <label class="flex items-center space-x-3 cursor-pointer group">
-            <div class="relative flex items-center">
-              <input
-                type="checkbox"
-                id="chk-case"
-                class="custom-checkbox opacity-0 absolute h-full w-full cursor-pointer z-10"
-              />
-              <div
-                class="w-5 h-5 bg-slate-900 border border-slate-600 rounded flex items-center justify-center transition-colors"
-              >
-                <svg
-                  class="w-3 h-3 text-white hidden pointer-events-none"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="3"
-                    d="M5 13l4 4L19 7"
-                  ></path>
-                </svg>
-              </div>
-            </div>
-            <span class="text-slate-400 text-sm group-hover:text-slate-300"
-              >Exigir Maiúsculas/Minúsculas Exatas</span
-            >
-          </label>
         </div>
       </div>
-
       <input type="file" id="file-input" accept=".pdf" class="hidden" />
     </div>
 
@@ -566,23 +633,23 @@
     >
       <span class="loader mb-6"></span>
       <h2 class="text-2xl font-light text-white">
-        Decifrando Página
-        <span id="loading-page-num" class="text-blue-400 font-bold">1</span>
+        Processando
+        <span id="loading-page-num" class="text-blue-400 font-bold"
+          >Conteúdo</span
+        >
       </h2>
-      <p class="text-slate-500 mt-2 text-sm">
-        Aplicando Inteligência Artificial...
-      </p>
+      <p class="text-slate-500 mt-2 text-sm">Aplicando Regras de Leitura...</p>
     </div>
 
     <div
       id="page-container"
-      class="hidden w-full max-w-5xl h-[85vh] flex flex-col relative z-10 transition-all duration-500"
+      class="hidden w-full max-w-5xl h-[80vh] flex flex-col relative z-10 transition-all duration-500 cursor-text"
     >
       <div
         id="page-card"
-        class="flex-1 bg-slate-800/80 backdrop-blur-sm rounded-[2.5rem] border border-slate-700 overflow-hidden relative flex flex-col mt-12"
+        class="flex-1 bg-slate-800/80 backdrop-blur-sm rounded-[2rem] border border-slate-700 overflow-hidden relative flex flex-col mt-20 md:mt-12 mx-2 md:mx-0 shadow-2xl"
       >
-        <div class="w-full h-1 bg-slate-700 absolute top-0 left-0">
+        <div class="w-full h-1 bg-slate-700 absolute top-0 left-0 z-10">
           <div
             id="reading-progress"
             class="h-full bg-gradient-to-r from-blue-500 to-green-400 transition-all duration-300"
@@ -590,8 +657,18 @@
           ></div>
         </div>
 
-        <div id="scroll-wrapper" class="flex-1 overflow-hidden p-8 md:p-16">
+        <div id="scroll-wrapper" class="flex-1 overflow-hidden p-6 md:p-16">
           <div id="typing-area" class="select-none outline-none"></div>
+        </div>
+
+        <div
+          class="absolute bottom-4 left-0 w-full flex justify-center md:hidden pointer-events-none opacity-50"
+        >
+          <span
+            class="bg-slate-900/80 text-white text-xs px-3 py-1 rounded-full"
+            ><i class="fas fa-hand-pointer"></i> Toque no texto para abrir o
+            teclado</span
+          >
         </div>
 
         <div
@@ -605,10 +682,10 @@
             <i
               class="fas fa-trophy text-5xl text-yellow-400 mb-4 animate-bounce"
             ></i>
-            <h3 class="text-3xl font-bold text-white mb-1">
-              Página Concluída!
+            <h3 class="text-2xl md:text-3xl font-bold text-white mb-1">
+              Treino Concluído!
             </h3>
-            <div class="flex justify-center gap-8 my-6">
+            <div class="flex justify-center gap-6 my-6">
               <div class="text-center">
                 <p class="text-slate-500 text-xs uppercase tracking-wider">
                   Velocidade
@@ -632,7 +709,7 @@
               id="btn-next-page"
               class="w-full bg-blue-600 hover:bg-blue-500 text-white py-4 rounded-xl font-bold shadow-lg transition transform hover:scale-105 flex items-center justify-center gap-2 group"
             >
-              Próxima Página
+              Próxima Etapa
               <i
                 class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"
               ></i>
@@ -644,7 +721,7 @@
 
     <div
       id="virtual-keyboard-container"
-      class="fixed bottom-0 left-0 w-full bg-slate-900/95 backdrop-blur-md border-t border-slate-700 p-4 transform translate-y-full z-40 flex flex-col items-center shadow-[0_-10px_40px_rgba(0,0,0,0.5)]"
+      class="hidden md:flex fixed bottom-0 left-0 w-full bg-slate-900/95 backdrop-blur-md border-t border-slate-700 p-4 transform translate-y-full z-40 flex-col items-center shadow-[0_-10px_40px_rgba(0,0,0,0.5)]"
     >
       <div class="w-full max-w-4xl">
         <div class="vk-row">
@@ -674,7 +751,7 @@
           <div class="vk-key" data-key="p">P</div>
           <div class="vk-key" data-key="acute">
             <div class="flex flex-col items-center text-sm leading-none">
-              <span class="text-slate-400 text-xs">`</span><span>´</span>
+              <span class="text-slate-400 text-[10px]">`</span><span>´</span>
             </div>
           </div>
         </div>
@@ -691,7 +768,7 @@
           <div class="vk-key" data-key="ç">Ç</div>
           <div class="vk-key" data-key="tilde">
             <div class="flex flex-col items-center text-sm leading-none">
-              <span class="text-slate-400 text-xs">^</span><span>~</span>
+              <span class="text-slate-400 text-[10px]">^</span><span>~</span>
             </div>
           </div>
           <div class="vk-key vk-enter" data-key="enter">ENTER</div>
@@ -710,7 +787,7 @@
           <div class="vk-key" data-key=";">;</div>
           <div class="vk-key vk-shift" data-key="shift">SHIFT</div>
         </div>
-        <div class="vk-row mt-2">
+        <div class="vk-row mt-1 md:mt-2">
           <div class="vk-key vk-space" data-key="space">ESPAÇO</div>
         </div>
       </div>
@@ -722,13 +799,21 @@
 
       let pdfDoc = null;
       let currentPage = 1;
-      let totalPages = 0;
+      let totalPages = 1;
       let originalText = "";
       let currentIndex = 0;
       let startTime = null;
       let errors = 0;
       let isTypingEnabled = false;
       let accentPending = false;
+      let isPredefinedMode = false;
+
+      // Textos Pre-definidos
+      const preDefTexts = {
+        historia: `A vila de Eldoria enfrentava a maior seca de sua história. O poço central havia secado completamente. Os moradores tentaram cavar mais fundo, mas encontraram apenas rocha maciça, e o racionamento rigoroso gerou desespero.\nDias se passaram com o calor aumentando e as esperanças diminuindo.\nAté que uma jovem construtora, observando as nuvens escuras sobre as montanhas, decidiu agir. Ela projetou e liderou a construção de um longo aqueduto de bambu.\nApós semanas de trabalho árduo e união da comunidade, a água fresca finalmente chegou à praça, resolvendo o problema e salvando a todos.`,
+        tecnico: `O desenvolvimento front-end moderno exige uma arquitetura sólida e escalável.\nFrameworks baseados em JavaScript facilitam a componentização da interface do usuário.\nAlém disso, o uso de utilitários de estilo permite que a aplicação seja construída de forma ágil.\nAo final, a otimização de performance e a responsividade devem ser sempre uma prioridade para garantir o sucesso.`,
+        motivacional: `O sucesso não é o final, e o fracasso não é fatal: o que realmente conta é a coragem para continuar.\nA jornada de mil milhas começa sempre com um único passo.\nNão tenha medo de desistir do que é bom para ir atrás do que é extraordinário.\nLembre-se de que a persistência é o único caminho verdadeiro para o êxito.`,
+      };
 
       // --- GERENCIADOR DE TEMAS ---
       const themeSelector = document.getElementById("theme-selector");
@@ -774,8 +859,18 @@
       const keyboardContainer = document.getElementById(
         "virtual-keyboard-container",
       );
+      const hiddenMobileInput = document.getElementById("mobile-hidden-input");
 
-      // --- CONTROLE DO TECLADO VIRTUAL ---
+      // --- CONTROLE DE FOCO (MOBILE) ---
+      // Ao tocar na tela do jogo, foca o input invisível para abrir o teclado nativo
+      pageContainer.addEventListener("click", () => {
+        if (isTypingEnabled) {
+          hiddenMobileInput.focus();
+          hiddenMobileInput.value = ""; // Previne acúmulo de cache no teclado nativo
+        }
+      });
+
+      // --- CONTROLE DO TECLADO GUIA ---
       document
         .getElementById("btn-toggle-keyboard")
         .addEventListener("click", () => {
@@ -793,18 +888,16 @@
         });
 
       function updateVirtualKeyboardHighlight() {
+        if (window.innerWidth < 768) return; // Não renderiza lógica pesada de teclado no celular
         document
           .querySelectorAll(".vk-key")
           .forEach((key) => key.classList.remove("active-target"));
-
         if (keyboardContainer.classList.contains("translate-y-full")) return;
 
         const spans = document.querySelectorAll("#typing-area span");
         if (currentIndex >= spans.length) return;
-
         const currentSpan = spans[currentIndex];
 
-        // Verifica se a letra atual é a requisição do Enter
         if (currentSpan.dataset.enter === "true") {
           const keyEl = document.querySelector(`.vk-key[data-key="enter"]`);
           if (keyEl) keyEl.classList.add("active-target");
@@ -816,13 +909,11 @@
 
         if (accentMap[lowerChar]) {
           const mapping = accentMap[lowerChar];
-
           if (!accentPending) {
             const keyEl = document.querySelector(
               `.vk-key[data-key="${mapping.key}"]`,
             );
             if (keyEl) keyEl.classList.add("active-target");
-
             if (mapping.reqShift || targetChar !== lowerChar) {
               document
                 .querySelectorAll('.vk-key[data-key="shift"]')
@@ -833,7 +924,6 @@
               `.vk-key[data-key="${mapping.base}"]`,
             );
             if (baseEl) baseEl.classList.add("active-target");
-
             if (targetChar !== lowerChar) {
               document
                 .querySelectorAll('.vk-key[data-key="shift"]')
@@ -848,7 +938,6 @@
             `.vk-key[data-key="${keyToFind}"]`,
           );
           if (keyEl) keyEl.classList.add("active-target");
-
           if (
             targetChar !== targetChar.toLowerCase() &&
             targetChar.match(/[A-ZÇ]/)
@@ -860,13 +949,37 @@
         }
       }
 
-      // --- 1. UPLOAD E SELEÇÃO DE PÁGINA ---
+      // --- INÍCIO RÁPIDO (TEXTOS PRÉ-DEFINIDOS) ---
+      window.startPredefined = function (type) {
+        isPredefinedMode = true;
+        pdfDoc = null;
+        totalPages = 1;
+        currentPage = 1;
+
+        uploadScreen.classList.add("opacity-0");
+        setTimeout(() => uploadScreen.classList.add("hidden"), 500);
+
+        document.getElementById("loading-page-num").innerText = "Selecionado";
+        document.getElementById("page-display").innerText = `1 / 1`;
+        progressBar.style.width = "0%";
+
+        // Ocultar os botões de paginação, pois só há 1 página
+        document.getElementById("btn-prev-page").classList.add("hidden");
+        document
+          .getElementById("btn-skip-current-page")
+          .classList.add("hidden");
+
+        prepareGame(preDefTexts[type]);
+      };
+
+      // --- UPLOAD PDF ---
       document
         .getElementById("file-input")
         .addEventListener("change", async (e) => {
           const file = e.target.files[0];
           if (!file) return;
 
+          isPredefinedMode = false;
           const userStartPage =
             parseInt(document.getElementById("start-page-input").value) || 1;
           uploadScreen.classList.add("opacity-0");
@@ -875,6 +988,11 @@
           const arrayBuffer = await file.arrayBuffer();
           pdfDoc = await pdfjsLib.getDocument(arrayBuffer).promise;
           totalPages = pdfDoc.numPages;
+
+          document.getElementById("btn-prev-page").classList.remove("hidden");
+          document
+            .getElementById("btn-skip-current-page")
+            .classList.remove("hidden");
 
           currentPage = userStartPage;
           if (currentPage < 1) currentPage = 1;
@@ -892,15 +1010,16 @@
         .addEventListener("click", () => {
           if (
             confirm(
-              "Deseja voltar ao início e escolher outro ficheiro PDF? O seu progresso atual será perdido.",
+              "Deseja voltar ao início? O seu progresso atual será perdido.",
             )
-          ) {
+          )
             location.reload();
-          }
         });
 
-      // --- 2. CARREGAMENTO (OCR) ---
+      // --- LEITURA DO PDF (OCR) ---
       async function loadPage(pageNum) {
+        if (isPredefinedMode) return; // Bloqueio de segurança
+
         isTypingEnabled = false;
         loaderScreen.classList.remove("hidden");
         pageContainer.classList.add("hidden");
@@ -941,7 +1060,7 @@
           }
           prepareGame(data.text);
         } catch (err) {
-          alert("Erro: " + err.message);
+          alert("Erro no processo: " + err.message);
           location.reload();
         }
       }
@@ -962,7 +1081,7 @@
         return t.replace(/[^\S\r\n]+/g, " ").trim();
       }
 
-      // --- 3. RENDERIZAÇÃO VISUAL ---
+      // --- RENDERIZAÇÃO ---
       function prepareGame(rawText) {
         originalText = cleanText(rawText);
         currentIndex = 0;
@@ -973,9 +1092,7 @@
         const lines = originalText.split("\n");
 
         lines.forEach((line) => {
-          // CORREÇÃO: Limpa os espaços residuais que vinham do OCR no final
           line = line.trim();
-
           if (line === "") return;
           const div = document.createElement("div");
           div.className = "line-block";
@@ -987,11 +1104,11 @@
             div.appendChild(span);
           });
 
-          // CORREÇÃO: Cria o Span de Enter exclusivamente
+          // Span de quebra de linha visual para guiar uso do Enter
           const enterSpan = document.createElement("span");
-          enterSpan.innerText = "↵"; // Símbolo visual sutil
+          enterSpan.innerText = "↵";
           enterSpan.className =
-            "pending text-slate-500 opacity-40 ml-1 text-sm";
+            "pending text-slate-500 opacity-40 ml-1 font-mono";
           enterSpan.dataset.enter = "true";
           div.appendChild(enterSpan);
 
@@ -1004,41 +1121,25 @@
           .getElementById("stats-container")
           .classList.remove("opacity-0");
 
-        setTimeout(() => pageCard.classList.add("visible"), 50);
+        setTimeout(() => {
+          pageCard.classList.add("visible");
+          hiddenMobileInput.focus(); // Foca imediatamente no mobile
+        }, 50);
+
         updateCursor();
         isTypingEnabled = true;
       }
 
-      // --- 4. GAME ENGINE ---
-      window.addEventListener("keydown", (e) => {
+      // --- NÚCLEO DA LÓGICA DE DIGITAÇÃO (UNIFICADA) ---
+      function processGameInput(keyString) {
         if (!isTypingEnabled) return;
-
-        if (
-          e.key === "Dead" ||
-          e.key === "´" ||
-          e.key === "`" ||
-          e.key === "~" ||
-          e.key === "^"
-        ) {
-          accentPending = true;
-          updateVirtualKeyboardHighlight();
-          return;
-        }
-
-        if (e.key === "Shift") return;
-
-        // Permite a passagem do Enter
-        if (e.key.length > 1 && e.key !== "Backspace" && e.key !== "Enter")
-          return;
 
         if (!startTime) startTime = new Date();
 
         const spans = document.querySelectorAll("#typing-area span");
-
-        // CORREÇÃO: Permite digitar o último elemento (Enter) antes de bloquear
         if (currentIndex >= spans.length) return;
 
-        if (e.key === "Backspace") {
+        if (keyString === "Backspace") {
           if (currentIndex > 0) {
             spans[currentIndex].className =
               "pending transition-colors duration-200";
@@ -1052,27 +1153,21 @@
           return;
         }
 
-        if (e.key === " ") e.preventDefault();
-
         const targetSpan = spans[currentIndex];
         const isEnterRequired = targetSpan.dataset.enter === "true";
         let isMatch = false;
 
-        // NOVA LÓGICA DE AVALIAÇÃO (Enter isolado)
         if (isEnterRequired) {
-          if (e.key === "Enter") {
-            isMatch = true;
-          } else {
-            isMatch = false; // Se não for o Enter exato, acusa erro.
-          }
+          isMatch = keyString === "Enter";
         } else {
           const targetChar = targetSpan.innerText;
-          const requireStrictCase = document.getElementById("chk-case").checked;
-
+          const requireStrictCase = document.getElementById("chk-case")
+            ? document.getElementById("chk-case").checked
+            : false;
           if (requireStrictCase) {
-            isMatch = e.key === targetChar;
+            isMatch = keyString === targetChar;
           } else {
-            isMatch = e.key.toLowerCase() === targetChar.toLowerCase();
+            isMatch = keyString.toLowerCase() === targetChar.toLowerCase();
           }
         }
 
@@ -1089,14 +1184,70 @@
         updateCursor();
         updateStats();
 
-        // Evita divisão por zero
         if (spans.length > 0) {
           const progress = (currentIndex / spans.length) * 100;
           progressBar.style.width = `${progress}%`;
         }
 
-        // CORREÇÃO: A página só finaliza APÓS apertar o Enter da última linha
         if (currentIndex >= spans.length) finishPage();
+      }
+
+      // EVENTO 1: Keydown (Captura Teclado Físico + Backspace/Enter em Mobile)
+      hiddenMobileInput.addEventListener("keydown", (e) => {
+        if (!isTypingEnabled) return;
+
+        // Controle de acentos do teclado visual
+        if (
+          e.key === "Dead" ||
+          e.key === "´" ||
+          e.key === "`" ||
+          e.key === "~" ||
+          e.key === "^"
+        ) {
+          accentPending = true;
+          updateVirtualKeyboardHighlight();
+          return;
+        }
+
+        if (e.key === "Shift") return;
+
+        if (e.key === "Backspace") {
+          processGameInput("Backspace");
+        } else if (e.key === "Enter") {
+          e.preventDefault();
+          processGameInput("Enter");
+        }
+      });
+
+      // EVENTO 2: Input (Captura digitação Mobile nativa com perfeição)
+      hiddenMobileInput.addEventListener("input", (e) => {
+        if (!isTypingEnabled) return;
+
+        // O Android às vezes lança eventos de input para o enter e backspace.
+        // Ignoramos aqui pois o 'keydown' já os tratou de forma mais confiável.
+        if (
+          e.inputType === "insertLineBreak" ||
+          e.inputType === "deleteContentBackward"
+        ) {
+          hiddenMobileInput.value = "";
+          return;
+        }
+
+        const val = hiddenMobileInput.value;
+        if (val) {
+          // Itera pelas letras inseridas (útil se o corretor de smartphone colar uma palavra inteira)
+          for (let i = 0; i < val.length; i++) {
+            if (val[i] !== "\n") processGameInput(val[i]);
+          }
+        }
+        hiddenMobileInput.value = ""; // Limpa a memória do teclado
+      });
+
+      // Redireciona os keydowns globais (Desktop) para o input focado
+      window.addEventListener("keydown", (e) => {
+        if (isTypingEnabled && document.activeElement !== hiddenMobileInput) {
+          hiddenMobileInput.focus();
+        }
       });
 
       function updateCursor() {
@@ -1131,9 +1282,10 @@
         }
       }
 
-      // --- 5. PAGINAÇÃO E CONTROLES ---
+      // --- FINALIZAÇÃO E TRANSIÇÕES ---
       function finishPage() {
         isTypingEnabled = false;
+        hiddenMobileInput.blur(); // Esconde o teclado nativo do smartphone
         nextPageOverlay.classList.remove("opacity-0", "pointer-events-none");
         nextPageOverlay.classList.add("opacity-100", "pointer-events-auto");
         setTimeout(() => statsCard.classList.remove("scale-90"), 100);
@@ -1141,6 +1293,10 @@
       }
 
       function advanceToNextPage() {
+        if (isPredefinedMode) {
+          location.reload(); // Se é modo rápido, voltar pro início
+          return;
+        }
         if (currentPage < totalPages) {
           isTypingEnabled = false;
           pageCard.classList.remove("visible");
@@ -1155,6 +1311,7 @@
       }
 
       function returnToPreviousPage() {
+        if (isPredefinedMode) return;
         if (currentPage > 1) {
           isTypingEnabled = false;
           pageCard.classList.remove("visible");

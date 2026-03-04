@@ -15,16 +15,169 @@
     <style>
       @import url("https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&family=Roboto+Mono:wght@400;500&display=swap");
 
+      /* =========================================
+         SISTEMA DE TEMAS DE CORES (VARIÁVEIS)
+         ========================================= */
+      :root {
+        /* Slate (Padrão Original) */
+        --th-base: #0f172a;
+        --th-dark: #020617;
+        --th-card: #1e293b;
+        --th-hover: #334155;
+        --th-border: #334155;
+        --th-main: #e2e8f0;
+        --th-muted: #94a3b8;
+        --th-accent: #3b82f6;
+        --th-highlight: #fbbf24;
+        --th-key: #334155;
+      }
+
+      [data-theme="sakura"] {
+        /* Sakura (Feminino / Delicado) */
+        --th-base: #2d1b2e;
+        --th-dark: #1a0f1b;
+        --th-card: #4a2c4d;
+        --th-hover: #701a75;
+        --th-border: #831843;
+        --th-main: #fce7f3;
+        --th-muted: #f472b6;
+        --th-accent: #ec4899;
+        --th-highlight: #fbcfe8;
+        --th-key: #701a75;
+      }
+
+      [data-theme="ocean"] {
+        /* Ocean (Masculino / Profundo) */
+        --th-base: #082f49;
+        --th-dark: #042f2e;
+        --th-card: #0c4a6e;
+        --th-hover: #075985;
+        --th-border: #0369a1;
+        --th-main: #e0f2fe;
+        --th-muted: #7dd3fc;
+        --th-accent: #0ea5e9;
+        --th-highlight: #38bdf8;
+        --th-key: #075985;
+      }
+
+      [data-theme="hacker"] {
+        /* Hacker (Dark / Foco Extremo) */
+        --th-base: #000000;
+        --th-dark: #000000;
+        --th-card: #111111;
+        --th-hover: #064e3b;
+        --th-border: #065f46;
+        --th-main: #4ade80;
+        --th-muted: #166534;
+        --th-accent: #22c55e;
+        --th-highlight: #10b981;
+        --th-key: #064e3b;
+      }
+
+      [data-theme="coffee"] {
+        /* Coffee (Neutro / Aconchegante) */
+        --th-base: #3e2723;
+        --th-dark: #212121;
+        --th-card: #4e342e;
+        --th-hover: #5d4037;
+        --th-border: #6d4c41;
+        --th-main: #efebe9;
+        --th-muted: #bcaaa4;
+        --th-accent: #8d6e63;
+        --th-highlight: #ffb300;
+        --th-key: #5d4037;
+      }
+
+      /* APLICAÇÃO DINÂMICA DO TEMA (Substitui as cores do Tailwind) */
       body {
-        background-color: #0f172a;
-        color: #e2e8f0;
+        background-color: var(--th-base) !important;
+        color: var(--th-main) !important;
+      }
+
+      .bg-slate-800,
+      .bg-slate-800\/80,
+      .bg-slate-800\/50,
+      #page-card {
+        background-color: var(--th-card) !important;
+      }
+      .bg-slate-900,
+      .bg-slate-900\/50,
+      .bg-slate-900\/95,
+      .bg-\[\#0f172a\] {
+        background-color: var(--th-dark) !important;
+      }
+      .bg-slate-700 {
+        background-color: var(--th-hover) !important;
+      }
+
+      .border-slate-600,
+      .border-slate-700,
+      .border-slate-700\/50 {
+        border-color: var(--th-border) !important;
+      }
+
+      .text-slate-400,
+      .text-slate-500,
+      #typing-area {
+        color: var(--th-muted) !important;
+      }
+      .text-slate-200,
+      .text-slate-300,
+      .text-white {
+        color: var(--th-main) !important;
+      }
+
+      .text-blue-500,
+      .text-blue-400,
+      .text-indigo-200 {
+        color: var(--th-accent) !important;
+      }
+      .bg-blue-600,
+      .bg-blue-500 {
+        background-color: var(--th-accent) !important;
+      }
+      .hover\:border-blue-500:hover {
+        border-color: var(--th-accent) !important;
+      }
+
+      .text-yellow-400 {
+        color: var(--th-highlight) !important;
+      }
+
+      /* UI Elements Specifics */
+      .vk-key {
+        background-color: var(--th-key) !important;
+        color: var(--th-muted) !important;
+        border-bottom-color: var(--th-dark) !important;
+      }
+      .vk-key.active-target {
+        background-color: var(--th-accent) !important;
+        color: var(--th-main) !important;
+        box-shadow: 0 0 15px var(--th-accent) !important;
+        border-bottom-color: var(--th-accent) !important;
+      }
+      .cursor {
+        background-color: var(--th-highlight) !important;
+        color: #000 !important;
+        box-shadow: 0 0 15px var(--th-highlight) !important;
+      }
+      .custom-checkbox:checked + div {
+        background-color: var(--th-accent) !important;
+        border-color: var(--th-accent) !important;
+      }
+      .correct {
+        color: var(--th-main) !important;
+        text-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
+      }
+
+      /* ========================================= */
+
+      body {
         font-family: "Inter", sans-serif;
         overflow: hidden;
       }
 
-      /* --- ESTILO DO PAPEL --- */
       #page-card {
-        background-color: #1e293b;
         box-shadow:
           0 25px 50px -12px rgba(0, 0, 0, 0.6),
           0 0 0 1px rgba(255, 255, 255, 0.05);
@@ -32,52 +185,36 @@
         opacity: 0;
         transform: translateY(40px) scale(0.95);
       }
-
       #page-card.visible {
         opacity: 1;
         transform: translateY(0) scale(1);
       }
-
       #page-card.exiting {
         opacity: 0;
         transform: translateX(-100px) rotate(-5deg);
       }
-
       #page-card.exiting-reverse {
         opacity: 0;
         transform: translateX(100px) rotate(5deg);
       }
 
-      /* Tipografia de Leitura */
       #typing-area {
         font-family: "Merriweather", serif;
         line-height: 2;
         font-size: 1.4rem;
-        color: #64748b;
       }
 
-      /* Blocos de Parágrafo */
       .line-block {
         display: block;
         margin-bottom: 0.75rem;
         min-height: 1.5rem;
       }
-
-      /* Cursor e Cores */
       .cursor {
-        background-color: #fbbf24;
-        color: #000;
         border-radius: 4px;
         padding: 0 2px;
-        box-shadow: 0 0 15px rgba(251, 191, 36, 0.6);
-      }
-      .correct {
-        color: #f1f5f9;
-        text-shadow: 0 0 8px rgba(255, 255, 255, 0.15);
-        transition: color 0.1s;
       }
       .incorrect {
-        color: #f87171;
+        color: #f87171 !important;
         text-decoration: underline wavy #f87171;
         background-color: rgba(248, 113, 113, 0.1);
       }
@@ -85,11 +222,10 @@
         transition: color 0.3s;
       }
 
-      /* Loader */
       .loader {
         width: 48px;
         height: 48px;
-        border: 3px solid #334155;
+        border: 3px solid var(--th-border);
         border-radius: 50%;
         display: inline-block;
         position: relative;
@@ -107,7 +243,7 @@
         height: 40px;
         border-radius: 50%;
         border: 3px solid;
-        border-color: #3b82f6 transparent;
+        border-color: var(--th-accent) transparent;
       }
       @keyframes rotation {
         0% {
@@ -118,16 +254,10 @@
         }
       }
 
-      /* Checkbox Styles */
-      .custom-checkbox:checked + div {
-        background-color: #3b82f6;
-        border-color: #3b82f6;
-      }
       .custom-checkbox:checked + div svg {
         display: block;
       }
 
-      /* --- TECLADO VIRTUAL STYLES --- */
       #virtual-keyboard-container {
         transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
       }
@@ -140,15 +270,13 @@
       .vk-key {
         width: 45px;
         height: 45px;
-        background-color: #334155;
-        border-bottom: 4px solid #1e293b;
+        border-bottom: 4px solid;
         border-radius: 8px;
         display: flex;
         align-items: center;
         justify-content: center;
         font-family: "Roboto Mono", monospace;
         font-weight: 600;
-        color: #94a3b8;
         font-size: 1.1rem;
         transition: all 0.2s;
         user-select: none;
@@ -160,16 +288,6 @@
         width: 80px;
         font-size: 0.9rem;
       }
-
-      .vk-key.active-target {
-        background-color: #3b82f6;
-        color: #ffffff;
-        border-bottom-width: 2px;
-        transform: translateY(2px) scale(1.05);
-        box-shadow: 0 0 20px rgba(59, 130, 246, 0.7);
-        z-index: 10;
-      }
-
       .keyboard-open #page-container {
         height: 55vh;
       }
@@ -205,12 +323,12 @@
         <button
           id="btn-toggle-keyboard"
           title="Mostrar Teclado Guia"
-          class="bg-indigo-900/50 hover:bg-indigo-800 backdrop-blur border border-indigo-700/50 text-indigo-200 px-3 py-2 rounded-xl flex items-center gap-2 shadow-lg transition-all group mr-4"
+          class="bg-slate-800/80 hover:bg-slate-700 backdrop-blur border border-slate-700 px-3 py-2 rounded-xl flex items-center gap-2 shadow-lg transition-all group mr-4"
         >
           <i
-            class="fas fa-keyboard group-hover:text-white transition-colors"
+            class="fas fa-keyboard group-hover:text-white transition-colors text-blue-400"
           ></i>
-          <span class="hidden xl:inline">Teclado</span>
+          <span class="hidden xl:inline text-white">Teclado</span>
         </button>
 
         <button
@@ -268,15 +386,15 @@
       class="flex flex-col items-center gap-6 transition-all duration-500 z-10 w-full max-w-lg mt-10"
     >
       <div
-        class="w-full h-48 bg-slate-800/50 border-2 border-dashed border-slate-600 rounded-3xl flex flex-col items-center justify-center hover:border-blue-500 hover:bg-slate-800 cursor-pointer transition-all group shadow-2xl"
+        class="w-full h-32 bg-slate-800/50 border-2 border-dashed border-slate-600 rounded-3xl flex flex-col items-center justify-center hover:border-blue-500 hover:bg-slate-800 cursor-pointer transition-all group shadow-2xl"
         onclick="document.getElementById('file-input').click()"
       >
         <div
-          class="bg-slate-700 p-4 rounded-full mb-3 group-hover:bg-blue-600 transition-colors"
+          class="bg-slate-700 p-3 rounded-full mb-2 group-hover:bg-blue-600 transition-colors"
         >
-          <i class="fas fa-file-pdf text-3xl text-white"></i>
+          <i class="fas fa-file-pdf text-2xl text-white"></i>
         </div>
-        <p class="text-xl font-medium text-slate-200">Carregar Livro PDF</p>
+        <p class="text-lg font-medium text-slate-200">Carregar Livro PDF</p>
       </div>
 
       <div
@@ -290,10 +408,30 @@
         </h3>
 
         <div
+          class="flex justify-between items-center mb-3 bg-slate-900/50 p-3 rounded-xl border border-slate-700/50"
+        >
+          <span
+            class="text-slate-400 font-medium text-sm flex items-center gap-2"
+            ><i class="fas fa-palette"></i> Tema Visual:</span
+          >
+          <select
+            id="theme-selector"
+            class="bg-slate-900 text-white w-40 p-1.5 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500 font-bold border border-slate-600"
+          >
+            <option value="slate">Slate (Padrão)</option>
+            <option value="sakura">Sakura (Feminino)</option>
+            <option value="ocean">Ocean (Masculino)</option>
+            <option value="coffee">Coffee (Aconchegante)</option>
+            <option value="hacker">Hacker (Foco)</option>
+          </select>
+        </div>
+
+        <div
           class="flex justify-between items-center mb-5 bg-slate-900/50 p-3 rounded-xl border border-slate-700/50"
         >
-          <span class="text-slate-400 font-medium text-sm"
-            >Página inicial:</span
+          <span
+            class="text-slate-400 font-medium text-sm flex items-center gap-2"
+            ><i class="fas fa-file-alt"></i> Página inicial:</span
           >
           <input
             type="number"
@@ -600,16 +738,30 @@
       let startTime = null;
       let errors = 0;
       let isTypingEnabled = false;
-      let accentPending = false; // Estado para controlar se o usuário já apertou a tecla de acento
+      let accentPending = false;
 
-      // --- MAPEAMENTO DE ACENTOS (Inteligência do Teclado) ---
+      // --- GERENCIADOR DE TEMAS ---
+      const themeSelector = document.getElementById("theme-selector");
+
+      // Carrega tema salvo ou padrão
+      const savedTheme = localStorage.getItem("pdfTyperTheme") || "slate";
+      document.documentElement.setAttribute("data-theme", savedTheme);
+      themeSelector.value = savedTheme;
+
+      // Muda o tema em tempo real
+      themeSelector.addEventListener("change", (e) => {
+        document.documentElement.setAttribute("data-theme", e.target.value);
+        localStorage.setItem("pdfTyperTheme", e.target.value);
+      });
+
+      // --- MAPEAMENTO DE ACENTOS ---
       const accentMap = {
         á: { key: "acute", base: "a", reqShift: false },
         é: { key: "acute", base: "e", reqShift: false },
         í: { key: "acute", base: "i", reqShift: false },
         ó: { key: "acute", base: "o", reqShift: false },
         ú: { key: "acute", base: "u", reqShift: false },
-        à: { key: "acute", base: "a", reqShift: true }, // Crase = Shift + ´
+        à: { key: "acute", base: "a", reqShift: true },
         è: { key: "acute", base: "e", reqShift: true },
         ì: { key: "acute", base: "i", reqShift: true },
         ò: { key: "acute", base: "o", reqShift: true },
@@ -617,7 +769,7 @@
         ã: { key: "tilde", base: "a", reqShift: false },
         õ: { key: "tilde", base: "o", reqShift: false },
         ñ: { key: "tilde", base: "n", reqShift: false },
-        â: { key: "tilde", base: "a", reqShift: true }, // Circunflexo = Shift + ~
+        â: { key: "tilde", base: "a", reqShift: true },
         ê: { key: "tilde", base: "e", reqShift: true },
         î: { key: "tilde", base: "i", reqShift: true },
         ô: { key: "tilde", base: "o", reqShift: true },
@@ -671,26 +823,22 @@
           const mapping = accentMap[lowerChar];
 
           if (!accentPending) {
-            // Se ainda não apertou o acento: ilumina o acento (e o Shift se for Crase/Circunflexo)
             const keyEl = document.querySelector(
               `.vk-key[data-key="${mapping.key}"]`,
             );
             if (keyEl) keyEl.classList.add("active-target");
 
-            // Maiúscula (A) com acento que também precisa de shift? Sempre ilumina o Shift
             if (mapping.reqShift || targetChar !== lowerChar) {
               document
                 .querySelectorAll('.vk-key[data-key="shift"]')
                 .forEach((k) => k.classList.add("active-target"));
             }
           } else {
-            // Se o acento já foi apertado: ilumina a letra base
             const baseEl = document.querySelector(
               `.vk-key[data-key="${mapping.base}"]`,
             );
             if (baseEl) baseEl.classList.add("active-target");
 
-            // Se a letra base for maiúscula, ilumina o Shift novamente
             if (targetChar !== lowerChar) {
               document
                 .querySelectorAll('.vk-key[data-key="shift"]')
@@ -708,7 +856,6 @@
           );
           if (keyEl) keyEl.classList.add("active-target");
 
-          // Verifica se a letra pede Maiúscula (Ex: A-Z, Ç)
           if (
             targetChar !== targetChar.toLowerCase() &&
             targetChar.match(/[A-ZÇ]/)
@@ -867,7 +1014,6 @@
         if (!isTypingEnabled) return;
 
         // INTERCEPTA AÇÕES DO TECLADO DE ACENTO
-        // Se a tecla pressionada for puramente um acento (Dead keys), muda o estado no teclado e aguarda a letra
         if (
           e.key === "Dead" ||
           e.key === "´" ||
@@ -876,11 +1022,11 @@
           e.key === "^"
         ) {
           accentPending = true;
-          updateVirtualKeyboardHighlight(); // Atualiza a luz do teclado para mostrar a letra agora
+          updateVirtualKeyboardHighlight();
           return;
         }
 
-        if (e.key === "Shift") return; // Ignora visualmente
+        if (e.key === "Shift") return;
 
         if (e.key.length > 1 && e.key !== "Backspace") return;
         if (e.key === "Enter") return;
@@ -897,7 +1043,7 @@
             currentIndex--;
             spans[currentIndex].className =
               "pending transition-colors duration-200";
-            accentPending = false; // Se apagou, reseta o estado de acentuação
+            accentPending = false;
             updateCursor();
             updateStats();
           }
@@ -918,11 +1064,11 @@
 
         if (isMatch) {
           spans[currentIndex].className = "correct";
-          accentPending = false; // Reseta após acertar
+          accentPending = false;
         } else {
           spans[currentIndex].className = "incorrect";
           errors++;
-          accentPending = false; // Reseta se errou o combo
+          accentPending = false;
         }
 
         currentIndex++;

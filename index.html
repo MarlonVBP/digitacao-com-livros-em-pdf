@@ -19,7 +19,6 @@
          SISTEMA DE TEMAS DE CORES (VARIÁVEIS)
          ========================================= */
       :root {
-        /* Slate (Padrão Original) */
         --th-base: #0f172a;
         --th-dark: #020617;
         --th-card: #1e293b;
@@ -33,7 +32,6 @@
       }
 
       [data-theme="sakura"] {
-        /* Sakura (Feminino / Delicado) */
         --th-base: #2d1b2e;
         --th-dark: #1a0f1b;
         --th-card: #4a2c4d;
@@ -47,7 +45,6 @@
       }
 
       [data-theme="ocean"] {
-        /* Ocean (Masculino / Profundo) */
         --th-base: #082f49;
         --th-dark: #042f2e;
         --th-card: #0c4a6e;
@@ -61,7 +58,6 @@
       }
 
       [data-theme="hacker"] {
-        /* Hacker (Dark / Foco Extremo) */
         --th-base: #000000;
         --th-dark: #000000;
         --th-card: #111111;
@@ -75,7 +71,6 @@
       }
 
       [data-theme="coffee"] {
-        /* Coffee (Neutro / Aconchegante) */
         --th-base: #3e2723;
         --th-dark: #212121;
         --th-card: #4e342e;
@@ -88,12 +83,12 @@
         --th-key: #5d4037;
       }
 
-      /* APLICAÇÃO DINÂMICA DO TEMA (Substitui as cores do Tailwind) */
       body {
         background-color: var(--th-base) !important;
         color: var(--th-main) !important;
+        font-family: "Inter", sans-serif;
+        overflow: hidden;
       }
-
       .bg-slate-800,
       .bg-slate-800\/80,
       .bg-slate-800\/50,
@@ -109,13 +104,11 @@
       .bg-slate-700 {
         background-color: var(--th-hover) !important;
       }
-
       .border-slate-600,
       .border-slate-700,
       .border-slate-700\/50 {
         border-color: var(--th-border) !important;
       }
-
       .text-slate-400,
       .text-slate-500,
       #typing-area {
@@ -126,7 +119,6 @@
       .text-white {
         color: var(--th-main) !important;
       }
-
       .text-blue-500,
       .text-blue-400,
       .text-indigo-200 {
@@ -139,12 +131,10 @@
       .hover\:border-blue-500:hover {
         border-color: var(--th-accent) !important;
       }
-
       .text-yellow-400 {
         color: var(--th-highlight) !important;
       }
 
-      /* UI Elements Specifics */
       .vk-key {
         background-color: var(--th-key) !important;
         color: var(--th-muted) !important;
@@ -171,11 +161,6 @@
       }
 
       /* ========================================= */
-
-      body {
-        font-family: "Inter", sans-serif;
-        overflow: hidden;
-      }
 
       #page-card {
         box-shadow:
@@ -285,6 +270,10 @@
         width: 300px;
       }
       .vk-key.vk-shift {
+        width: 80px;
+        font-size: 0.9rem;
+      }
+      .vk-key.vk-enter {
         width: 80px;
         font-size: 0.9rem;
       }
@@ -705,6 +694,7 @@
               <span class="text-slate-400 text-xs">^</span><span>~</span>
             </div>
           </div>
+          <div class="vk-key vk-enter" data-key="enter">ENTER</div>
         </div>
         <div class="vk-row">
           <div class="vk-key vk-shift" data-key="shift">SHIFT</div>
@@ -742,13 +732,10 @@
 
       // --- GERENCIADOR DE TEMAS ---
       const themeSelector = document.getElementById("theme-selector");
-
-      // Carrega tema salvo ou padrão
       const savedTheme = localStorage.getItem("pdfTyperTheme") || "slate";
       document.documentElement.setAttribute("data-theme", savedTheme);
       themeSelector.value = savedTheme;
 
-      // Muda o tema em tempo real
       themeSelector.addEventListener("change", (e) => {
         document.documentElement.setAttribute("data-theme", e.target.value);
         localStorage.setItem("pdfTyperTheme", e.target.value);
@@ -813,12 +800,20 @@
         if (keyboardContainer.classList.contains("translate-y-full")) return;
 
         const spans = document.querySelectorAll("#typing-area span");
-        if (currentIndex >= spans.length - 1) return;
+        if (currentIndex >= spans.length) return;
 
-        let targetChar = spans[currentIndex].innerText;
+        const currentSpan = spans[currentIndex];
+
+        // Verifica se a letra atual é a requisição do Enter
+        if (currentSpan.dataset.enter === "true") {
+          const keyEl = document.querySelector(`.vk-key[data-key="enter"]`);
+          if (keyEl) keyEl.classList.add("active-target");
+          return;
+        }
+
+        let targetChar = currentSpan.innerText;
         let lowerChar = targetChar.toLowerCase();
 
-        // 1. LÓGICA DE LETRAS ACENTUADAS
         if (accentMap[lowerChar]) {
           const mapping = accentMap[lowerChar];
 
@@ -845,9 +840,7 @@
                 .forEach((k) => k.classList.add("active-target"));
             }
           }
-        }
-        // 2. LÓGICA DE LETRAS COMUNS
-        else {
+        } else {
           let keyToFind = lowerChar;
           if (targetChar === " ") keyToFind = "space";
 
@@ -975,12 +968,15 @@
         currentIndex = 0;
         errors = 0;
         startTime = null;
-        accentPending = false; // Resetando estado do acento
+        accentPending = false;
         typingArea.innerHTML = "";
         const lines = originalText.split("\n");
 
         lines.forEach((line) => {
-          if (line.trim() === "") return;
+          // CORREÇÃO: Limpa os espaços residuais que vinham do OCR no final
+          line = line.trim();
+
+          if (line === "") return;
           const div = document.createElement("div");
           div.className = "line-block";
 
@@ -991,10 +987,14 @@
             div.appendChild(span);
           });
 
-          const spaceSpan = document.createElement("span");
-          spaceSpan.innerText = " ";
-          spaceSpan.className = "pending";
-          div.appendChild(spaceSpan);
+          // CORREÇÃO: Cria o Span de Enter exclusivamente
+          const enterSpan = document.createElement("span");
+          enterSpan.innerText = "↵"; // Símbolo visual sutil
+          enterSpan.className =
+            "pending text-slate-500 opacity-40 ml-1 text-sm";
+          enterSpan.dataset.enter = "true";
+          div.appendChild(enterSpan);
+
           typingArea.appendChild(div);
         });
 
@@ -1013,7 +1013,6 @@
       window.addEventListener("keydown", (e) => {
         if (!isTypingEnabled) return;
 
-        // INTERCEPTA AÇÕES DO TECLADO DE ACENTO
         if (
           e.key === "Dead" ||
           e.key === "´" ||
@@ -1028,13 +1027,16 @@
 
         if (e.key === "Shift") return;
 
-        if (e.key.length > 1 && e.key !== "Backspace") return;
-        if (e.key === "Enter") return;
+        // Permite a passagem do Enter
+        if (e.key.length > 1 && e.key !== "Backspace" && e.key !== "Enter")
+          return;
 
         if (!startTime) startTime = new Date();
 
         const spans = document.querySelectorAll("#typing-area span");
-        if (currentIndex >= spans.length - 1) return;
+
+        // CORREÇÃO: Permite digitar o último elemento (Enter) antes de bloquear
+        if (currentIndex >= spans.length) return;
 
         if (e.key === "Backspace") {
           if (currentIndex > 0) {
@@ -1052,14 +1054,26 @@
 
         if (e.key === " ") e.preventDefault();
 
-        const targetChar = spans[currentIndex].innerText;
-        const requireStrictCase = document.getElementById("chk-case").checked;
+        const targetSpan = spans[currentIndex];
+        const isEnterRequired = targetSpan.dataset.enter === "true";
         let isMatch = false;
 
-        if (requireStrictCase) {
-          isMatch = e.key === targetChar;
+        // NOVA LÓGICA DE AVALIAÇÃO (Enter isolado)
+        if (isEnterRequired) {
+          if (e.key === "Enter") {
+            isMatch = true;
+          } else {
+            isMatch = false; // Se não for o Enter exato, acusa erro.
+          }
         } else {
-          isMatch = e.key.toLowerCase() === targetChar.toLowerCase();
+          const targetChar = targetSpan.innerText;
+          const requireStrictCase = document.getElementById("chk-case").checked;
+
+          if (requireStrictCase) {
+            isMatch = e.key === targetChar;
+          } else {
+            isMatch = e.key.toLowerCase() === targetChar.toLowerCase();
+          }
         }
 
         if (isMatch) {
@@ -1075,10 +1089,14 @@
         updateCursor();
         updateStats();
 
-        const progress = (currentIndex / (spans.length - 1)) * 100;
-        progressBar.style.width = `${progress}%`;
+        // Evita divisão por zero
+        if (spans.length > 0) {
+          const progress = (currentIndex / spans.length) * 100;
+          progressBar.style.width = `${progress}%`;
+        }
 
-        if (currentIndex >= spans.length - 1) finishPage();
+        // CORREÇÃO: A página só finaliza APÓS apertar o Enter da última linha
+        if (currentIndex >= spans.length) finishPage();
       });
 
       function updateCursor() {

@@ -8,6 +8,7 @@
     />
     <title>PDF Typer Reader Pro</title>
 
+    <!-- Bibliotecas Externas -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
@@ -17,6 +18,9 @@
     />
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
+    <!-- ====================================================================== -->
+    <!-- INÍCIO DO CSS (Pode mover isto para css/style.css)                     -->
+    <!-- ====================================================================== -->
     <style>
       @import url("https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&family=Roboto+Mono:wght@400;500&display=swap");
 
@@ -251,6 +255,7 @@
         display: block;
       }
 
+      /* Teclado UI */
       #virtual-keyboard-container {
         transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
       }
@@ -309,6 +314,7 @@
         height: 50vh;
       }
 
+      /* Animações do Placar e Pódio */
       @keyframes slideUpReveal {
         from {
           opacity: 0;
@@ -353,6 +359,7 @@
         border: 1px solid rgba(51, 65, 85, 0.5);
       }
 
+      /* Tela de Login Smooth Fade */
       .fade-in {
         animation: fadeIn 0.5s ease-in forwards;
       }
@@ -377,11 +384,15 @@
         }
       }
     </style>
+    <!-- ====================================================================== -->
+    <!-- FIM DO CSS                                                             -->
+    <!-- ====================================================================== -->
   </head>
 
   <body
     class="h-screen w-screen flex flex-col items-center justify-center relative overflow-hidden transition-all duration-500"
   >
+    <!-- INPUT OCULTO PARA MOBILE -->
     <textarea
       id="mobile-hidden-input"
       class="fixed top-1/2 left-1/2 opacity-0 w-[1px] h-[1px] -z-50"
@@ -391,6 +402,7 @@
       spellcheck="false"
     ></textarea>
 
+    <!-- TELA DE LOGIN / IDENTIFICAÇÃO -->
     <div
       id="login-screen"
       class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#0f172a] fade-in"
@@ -434,6 +446,7 @@
       </div>
     </div>
 
+    <!-- HEADER SUPERIOR -->
     <header
       id="main-header"
       class="absolute top-0 left-0 w-full p-4 md:p-8 flex justify-between items-center z-20 pointer-events-none hidden opacity-0 transition-opacity duration-500"
@@ -525,11 +538,13 @@
       </div>
     </header>
 
+    <!-- TELA INICIAL (MENU PRINCIPAL) -->
     <div
       id="upload-screen"
       class="hidden flex-col items-center gap-4 transition-all duration-500 z-10 w-full max-w-3xl mt-24 px-4 pb-10 overflow-y-auto no-scrollbar"
       style="max-height: 85vh"
     >
+      <!-- Secção de Placares em Destaque -->
       <div class="w-full flex flex-col sm:flex-row gap-4 mb-2">
         <button
           id="btn-show-local-leaderboard"
@@ -810,6 +825,7 @@
       <input type="file" id="file-input" accept=".pdf" class="hidden" />
     </div>
 
+    <!-- LOADER -->
     <div
       id="loader-screen"
       class="hidden absolute inset-0 bg-[#0f172a] z-30 flex flex-col items-center justify-center"
@@ -824,6 +840,7 @@
       <p class="text-slate-500 mt-2 text-sm">Aplicando Regras de Leitura...</p>
     </div>
 
+    <!-- CONTAINER DA PÁGINA (LEITURA) -->
     <div
       id="page-container"
       class="hidden w-full max-w-5xl h-[80vh] flex flex-col relative z-10 transition-all duration-500 cursor-text"
@@ -902,6 +919,7 @@
       </div>
     </div>
 
+    <!-- TECLADO VIRTUAL GUIA -->
     <div
       id="virtual-keyboard-container"
       class="hidden md:flex fixed bottom-0 left-0 w-full bg-slate-900/95 backdrop-blur-md border-t border-slate-700 p-4 transform translate-y-full z-40 flex-col items-center shadow-[0_-10px_40px_rgba(0,0,0,0.5)]"
@@ -976,6 +994,7 @@
       </div>
     </div>
 
+    <!-- MODAL DO PLACAR GLOBAL -->
     <div
       id="global-leaderboard-modal"
       class="fixed inset-0 bg-[#0f172a]/95 backdrop-blur-md z-[100] hidden flex-col items-center p-4 pt-10 overflow-y-auto no-scrollbar"
@@ -1010,6 +1029,7 @@
       </div>
     </div>
 
+    <!-- MODAL DO PLACAR LOCAL (MEU HISTÓRICO) -->
     <div
       id="local-leaderboard-modal"
       class="fixed inset-0 bg-[#0f172a]/95 backdrop-blur-md z-[100] hidden flex-col items-center p-4 pt-10 overflow-y-auto no-scrollbar"
@@ -1046,11 +1066,16 @@
           <div
             id="local-history-list"
             class="flex flex-col max-h-[50vh] overflow-y-auto no-scrollbar"
-          ></div>
+          >
+            <!-- Injetado via JS -->
+          </div>
         </div>
       </div>
     </div>
 
+    <!-- ====================================================================== -->
+    <!-- INÍCIO DO JAVASCRIPT (Pode mover isto para js/app.js)                  -->
+    <!-- ====================================================================== -->
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
       import {
@@ -1065,6 +1090,7 @@
         signInWithCustomToken,
       } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
+      // --- CONFIGURAÇÃO FIREBASE ---
       const myFirebaseConfig = {
         apiKey: "AIzaSyB7_G_5ZfgVHvI_wn1VvlQzgcUSwxohG0M",
         authDomain: "pdf-typer-reader-pro.firebaseapp.com",
@@ -1124,6 +1150,7 @@
         }
       }
 
+      // NOVO: Lógica de Filtro para Melhor Pontuação por Utilizador
       async function fetchLeaderboardFromDatabase() {
         if (!auth.currentUser) return [];
         try {
@@ -1136,12 +1163,31 @@
             "leaderboard",
           );
           const querySnapshot = await getDocs(colRef);
-          let data = [];
-          querySnapshot.forEach((doc) => data.push(doc.data()));
+          let userBestScores = {};
+
+          querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            const playerName = data.name || "Anónimo";
+
+            // Só substitui se o jogador ainda não existir no map OU se a pontuação atual for MAIOR que a guardada
+            if (
+              !userBestScores[playerName] ||
+              data.wpm > userBestScores[playerName].wpm
+            ) {
+              userBestScores[playerName] = data;
+              userBestScores[playerName].name = playerName; // Garante que o nome se mantém
+            }
+          });
+
+          // Converte o objeto de volta para array para ordenação
+          let data = Object.values(userBestScores);
+
+          // Ordena do maior WPM para o menor
           data.sort((a, b) => b.wpm - a.wpm);
+
           return data.slice(0, 5).map((item, index) => ({
             rank: index + 1,
-            name: item.name || "Anónimo",
+            name: item.name,
             wpm: item.wpm,
             acc: item.acc,
           }));
@@ -1150,6 +1196,7 @@
         }
       }
 
+      // --- VARIÁVEIS DA APP ---
       pdfjsLib.GlobalWorkerOptions.workerSrc =
         "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
 
@@ -1171,6 +1218,7 @@
         motivacional: `O sucesso não é o final, e o fracasso não é fatal: o que realmente conta é a coragem para continuar.\nA jornada de mil milhas começa sempre com um único passo.\nNão tenha medo de desistir do que é bom para ir atrás do que é extraordinário.\nLembre-se de que a persistência é o único caminho verdadeiro para o êxito.`,
       };
 
+      // DOM Elements
       const loginScreen = document.getElementById("login-screen");
       const loginNameInput = document.getElementById("login-name-input");
       const btnLoginSubmit = document.getElementById("btn-login-submit");
@@ -1189,6 +1237,7 @@
       );
       const hiddenMobileInput = document.getElementById("mobile-hidden-input");
 
+      // --- LÓGICA DE LOGIN ---
       function checkLogin() {
         const savedName = localStorage.getItem("pdfTyperPlayerName");
         if (savedName) {
@@ -1225,6 +1274,7 @@
 
       checkLogin();
 
+      // --- TEMAS ---
       const themeSelector = document.getElementById("theme-selector");
       const savedTheme = localStorage.getItem("pdfTyperTheme") || "slate";
       document.documentElement.setAttribute("data-theme", savedTheme);
@@ -1235,6 +1285,7 @@
           localStorage.setItem("pdfTyperTheme", e.target.value);
         });
 
+      // --- MAPA DE ACENTOS E TECLADO ---
       const accentMap = {
         á: { key: "acute", base: "a", reqShift: false },
         é: { key: "acute", base: "e", reqShift: false },
@@ -1339,6 +1390,7 @@
         }
       }
 
+      // --- INICIAÇÃO DE JOGOS ---
       function setupGameUI() {
         uploadScreen.classList.add("opacity-0");
         setTimeout(() => {
@@ -1420,6 +1472,7 @@
             location.reload();
         });
 
+      // --- LEITURA DO PDF ---
       async function loadPage(pageNum) {
         if (isPredefinedMode) return;
 
@@ -1527,6 +1580,7 @@
         isTypingEnabled = true;
       }
 
+      // --- MOTOR DO JOGO ---
       function processGameInput(keyString) {
         if (!isTypingEnabled) return;
         if (!startTime) startTime = new Date();
@@ -1661,6 +1715,7 @@
         }
       }
 
+      // --- SALVAR HISTÓRICO LOCAL ---
       function saveLocalHistory(wpm, acc) {
         let history = JSON.parse(
           localStorage.getItem("pdfTyperHistory") || "[]",
@@ -1697,8 +1752,10 @@
           );
         }
 
+        // Grava no LocalStorage (Mostra todas as tentativas no Local)
         if (finalWpm > 0) saveLocalHistory(finalWpm, finalAcc);
 
+        // Grava no Firebase Global
         if (currentPlayerName !== "" && finalWpm > 0 && finalWpm <= 300) {
           saveScoreToDatabase(currentPlayerName, finalWpm, finalAcc);
         }
@@ -1768,6 +1825,11 @@
         }
       });
 
+      // =========================================================================
+      // PLACARES GLOBAIS E LOCAIS
+      // =========================================================================
+
+      // -- GLOBAL --
       const btnShowGlobalLeaderboard = document.getElementById(
         "btn-show-global-leaderboard",
       );
@@ -1889,6 +1951,7 @@
         }, 250);
       }
 
+      // -- LOCAL (HISTÓRICO PESSOAL) --
       const btnShowLocalLeaderboard = document.getElementById(
         "btn-show-local-leaderboard",
       );

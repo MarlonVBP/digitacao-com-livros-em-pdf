@@ -15,9 +15,370 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
       rel="stylesheet"
     />
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
-    <link rel="stylesheet" href="css/style.css" />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&family=Roboto+Mono:wght@400;500&display=swap");
+
+      :root {
+        --th-base: #0f172a;
+        --th-dark: #020617;
+        --th-card: #1e293b;
+        --th-hover: #334155;
+        --th-border: #334155;
+        --th-main: #e2e8f0;
+        --th-muted: #94a3b8;
+        --th-accent: #3b82f6;
+        --th-highlight: #fbbf24;
+        --th-key: #334155;
+      }
+      [data-theme="sakura"] {
+        --th-base: #2d1b2e;
+        --th-dark: #1a0f1b;
+        --th-card: #4a2c4d;
+        --th-hover: #701a75;
+        --th-border: #831843;
+        --th-main: #fce7f3;
+        --th-muted: #f472b6;
+        --th-accent: #ec4899;
+        --th-highlight: #fbcfe8;
+        --th-key: #701a75;
+      }
+      [data-theme="ocean"] {
+        --th-base: #082f49;
+        --th-dark: #042f2e;
+        --th-card: #0c4a6e;
+        --th-hover: #075985;
+        --th-border: #0369a1;
+        --th-main: #e0f2fe;
+        --th-muted: #7dd3fc;
+        --th-accent: #0ea5e9;
+        --th-highlight: #38bdf8;
+        --th-key: #075985;
+      }
+      [data-theme="hacker"] {
+        --th-base: #000000;
+        --th-dark: #000000;
+        --th-card: #111111;
+        --th-hover: #064e3b;
+        --th-border: #065f46;
+        --th-main: #4ade80;
+        --th-muted: #166534;
+        --th-accent: #22c55e;
+        --th-highlight: #10b981;
+        --th-key: #064e3b;
+      }
+      [data-theme="coffee"] {
+        --th-base: #3e2723;
+        --th-dark: #212121;
+        --th-card: #4e342e;
+        --th-hover: #5d4037;
+        --th-border: #6d4c41;
+        --th-main: #efebe9;
+        --th-muted: #bcaaa4;
+        --th-accent: #8d6e63;
+        --th-highlight: #ffb300;
+        --th-key: #5d4037;
+      }
+
+      body {
+        background-color: var(--th-base) !important;
+        color: var(--th-main) !important;
+        font-family: "Inter", sans-serif;
+        overflow: hidden;
+      }
+      .bg-slate-800,
+      .bg-slate-800\/80,
+      .bg-slate-800\/50,
+      #page-card {
+        background-color: var(--th-card) !important;
+      }
+      .bg-slate-900,
+      .bg-slate-900\/50,
+      .bg-slate-900\/95,
+      .bg-\[\#0f172a\] {
+        background-color: var(--th-dark) !important;
+      }
+      .bg-slate-700 {
+        background-color: var(--th-hover) !important;
+      }
+      .border-slate-600,
+      .border-slate-700,
+      .border-slate-700\/50 {
+        border-color: var(--th-border) !important;
+      }
+      .text-slate-400,
+      .text-slate-500,
+      #typing-area {
+        color: var(--th-muted) !important;
+      }
+      .text-slate-200,
+      .text-slate-300,
+      .text-white {
+        color: var(--th-main) !important;
+      }
+      .text-blue-500,
+      .text-blue-400,
+      .text-indigo-200 {
+        color: var(--th-accent) !important;
+      }
+      .bg-blue-600,
+      .bg-blue-500 {
+        background-color: var(--th-accent) !important;
+      }
+      .hover\:border-blue-500:hover {
+        border-color: var(--th-accent) !important;
+      }
+      .text-yellow-400 {
+        color: var(--th-highlight) !important;
+      }
+
+      .vk-key {
+        background-color: var(--th-key) !important;
+        color: var(--th-muted) !important;
+        border-bottom-color: var(--th-dark) !important;
+      }
+      .vk-key.active-target {
+        background-color: var(--th-accent) !important;
+        color: var(--th-main) !important;
+        box-shadow: 0 0 15px var(--th-accent) !important;
+        border-bottom-color: var(--th-accent) !important;
+      }
+      .cursor {
+        background-color: var(--th-highlight) !important;
+        color: #000 !important;
+        box-shadow: 0 0 15px var(--th-highlight) !important;
+      }
+      .custom-checkbox:checked + div {
+        background-color: var(--th-accent) !important;
+        border-color: var(--th-accent) !important;
+      }
+      .correct {
+        color: var(--th-main) !important;
+        text-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
+      }
+
+      .no-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+      .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+
+      #page-card {
+        box-shadow:
+          0 25px 50px -12px rgba(0, 0, 0, 0.6),
+          0 0 0 1px rgba(255, 255, 255, 0.05);
+        transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        opacity: 0;
+        transform: translateY(40px) scale(0.95);
+      }
+      #page-card.visible {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+      #page-card.exiting {
+        opacity: 0;
+        transform: translateX(-100px) rotate(-5deg);
+      }
+      #page-card.exiting-reverse {
+        opacity: 0;
+        transform: translateX(100px) rotate(5deg);
+      }
+
+      #typing-area {
+        font-family: "Merriweather", serif;
+        line-height: 2;
+        font-size: 1.2rem;
+      }
+      @media (min-width: 768px) {
+        #typing-area {
+          font-size: 1.4rem;
+        }
+      }
+
+      .line-block {
+        display: block;
+        margin-bottom: 0.75rem;
+        min-height: 1.5rem;
+      }
+      .cursor {
+        border-radius: 4px;
+        padding: 0 2px;
+      }
+      .incorrect {
+        color: #f87171 !important;
+        text-decoration: underline wavy #f87171;
+        background-color: rgba(248, 113, 113, 0.1);
+      }
+      .pending {
+        transition: color 0.3s;
+      }
+
+      .loader {
+        width: 48px;
+        height: 48px;
+        border: 3px solid var(--th-border);
+        border-radius: 50%;
+        display: inline-block;
+        position: relative;
+        box-sizing: border-box;
+        animation: rotation 1s linear infinite;
+      }
+      .loader::after {
+        content: "";
+        box-sizing: border-box;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 3px solid;
+        border-color: var(--th-accent) transparent;
+      }
+      @keyframes rotation {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+      .custom-checkbox:checked + div svg {
+        display: block;
+      }
+
+      #virtual-keyboard-container {
+        transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .vk-row {
+        display: flex;
+        justify-content: center;
+        gap: 4px;
+        margin-bottom: 4px;
+      }
+      @media (min-width: 768px) {
+        .vk-row {
+          gap: 6px;
+          margin-bottom: 6px;
+        }
+      }
+      .vk-key {
+        width: 32px;
+        height: 38px;
+        border-bottom: 3px solid;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Roboto Mono", monospace;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: all 0.2s;
+        user-select: none;
+      }
+      @media (min-width: 768px) {
+        .vk-key {
+          width: 45px;
+          height: 45px;
+          font-size: 1.1rem;
+        }
+      }
+      .vk-key.vk-space {
+        width: 200px;
+      }
+      .vk-key.vk-shift,
+      .vk-key.vk-enter {
+        width: 55px;
+        font-size: 0.7rem;
+      }
+      @media (min-width: 768px) {
+        .vk-key.vk-space {
+          width: 300px;
+        }
+        .vk-key.vk-shift,
+        .vk-key.vk-enter {
+          width: 80px;
+          font-size: 0.9rem;
+        }
+      }
+      .keyboard-open #page-container {
+        height: 50vh;
+      }
+
+      @keyframes slideUpReveal {
+        from {
+          opacity: 0;
+          transform: translateY(30px) scale(0.9);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+      .reveal-item {
+        opacity: 0;
+        animation: slideUpReveal 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+      }
+
+      .rank-1 {
+        background: linear-gradient(
+          135deg,
+          rgba(251, 191, 36, 0.15) 0%,
+          rgba(217, 119, 6, 0.3) 100%
+        );
+        border: 1px solid rgba(251, 191, 36, 0.5);
+      }
+      .rank-2 {
+        background: linear-gradient(
+          135deg,
+          rgba(148, 163, 184, 0.15) 0%,
+          rgba(100, 116, 139, 0.3) 100%
+        );
+        border: 1px solid rgba(148, 163, 184, 0.5);
+      }
+      .rank-3 {
+        background: linear-gradient(
+          135deg,
+          rgba(180, 83, 9, 0.15) 0%,
+          rgba(120, 53, 15, 0.3) 100%
+        );
+        border: 1px solid rgba(180, 83, 9, 0.5);
+      }
+      .rank-other {
+        background-color: rgba(30, 41, 59, 0.6);
+        border: 1px solid rgba(51, 65, 85, 0.5);
+      }
+
+      .fade-in {
+        animation: fadeIn 0.5s ease-in forwards;
+      }
+      .fade-out {
+        animation: fadeOut 0.5s ease-out forwards;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      @keyframes fadeOut {
+        from {
+          opacity: 1;
+        }
+        to {
+          opacity: 0;
+          visibility: hidden;
+        }
+      }
+    </style>
   </head>
+
   <body
     class="h-screen w-screen flex flex-col items-center justify-center relative overflow-hidden transition-all duration-500"
   >
@@ -30,23 +391,72 @@
       spellcheck="false"
     ></textarea>
 
+    <div
+      id="login-screen"
+      class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#0f172a] fade-in"
+    >
+      <div
+        class="w-full max-w-md p-8 bg-slate-800/80 backdrop-blur-md rounded-3xl border border-slate-700 shadow-2xl text-center transform transition-all"
+      >
+        <i
+          class="fas fa-keyboard text-6xl text-blue-500 mb-6 drop-shadow-[0_0_15px_rgba(59,130,246,0.5)]"
+        ></i>
+        <h1 class="text-3xl font-bold tracking-widest text-slate-200 mb-2">
+          PDF<span class="text-blue-500">READER</span>
+          <span class="text-xs align-top text-yellow-400">PRO</span>
+        </h1>
+        <p class="text-slate-400 mb-8">
+          Treino de Digitação com Inteligência Artificial
+        </p>
+
+        <div class="text-left mb-6">
+          <label
+            class="block text-slate-300 font-bold mb-2 flex items-center gap-2"
+          >
+            <i class="fas fa-user-astronaut text-blue-400"></i> Qual o seu Nome
+            de Jogador?
+          </label>
+          <input
+            type="text"
+            id="login-name-input"
+            placeholder="Ex: Ninja_do_Teclado"
+            maxlength="15"
+            class="w-full bg-slate-900 text-white p-4 rounded-xl border border-slate-600 focus:border-blue-400 focus:ring-2 focus:ring-blue-500/50 outline-none text-lg transition"
+          />
+        </div>
+
+        <button
+          id="btn-login-submit"
+          class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-xl shadow-[0_0_20px_rgba(59,130,246,0.4)] transition transform hover:scale-105 flex justify-center items-center gap-2"
+        >
+          Começar a Jogar <i class="fas fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+
     <header
-      class="absolute top-0 left-0 w-full p-4 md:p-8 flex justify-between items-center z-20 pointer-events-none"
+      id="main-header"
+      class="absolute top-0 left-0 w-full p-4 md:p-8 flex justify-between items-center z-20 pointer-events-none hidden opacity-0 transition-opacity duration-500"
     >
       <h1
-        class="text-xl md:text-2xl font-bold tracking-widest text-slate-500 pointer-events-auto"
+        class="text-xl md:text-2xl font-bold tracking-widest text-slate-500 pointer-events-auto flex items-center gap-2"
       >
+        <i class="fas fa-user-circle text-blue-400 text-sm"></i>
+        <span
+          id="display-user-name"
+          class="text-sm font-normal text-slate-300 mr-2"
+        ></span>
         PDF<span class="text-blue-500">READER</span>
       </h1>
 
       <div
-        class="flex gap-2 md:gap-3 text-xs md:text-sm font-mono opacity-0 transition-opacity duration-500 pointer-events-auto flex-wrap justify-end"
+        class="flex gap-2 md:gap-3 text-xs md:text-sm font-mono pointer-events-auto flex-wrap justify-end"
         id="stats-container"
       >
         <button
           id="btn-change-pdf"
           title="Voltar ao início"
-          class="bg-red-900/40 hover:bg-red-800/80 backdrop-blur border border-red-700/50 text-red-200 px-2 md:px-3 py-2 rounded-xl flex items-center gap-2 shadow-lg transition-all group"
+          class="bg-red-900/40 hover:bg-red-800/80 backdrop-blur border border-red-700/50 text-red-200 px-2 md:px-3 py-2 rounded-xl flex items-center gap-2 shadow-lg transition-all group hidden"
         >
           <i class="fas fa-home group-hover:scale-110 transition-transform"></i>
           <span class="hidden xl:inline">Início</span>
@@ -55,7 +465,7 @@
         <button
           id="btn-toggle-keyboard"
           title="Mostrar Teclado Guia"
-          class="hidden md:flex bg-slate-800/80 hover:bg-slate-700 backdrop-blur border border-slate-700 px-3 py-2 rounded-xl items-center gap-2 shadow-lg transition-all group"
+          class="hidden md:flex bg-slate-800/80 hover:bg-slate-700 backdrop-blur border border-slate-700 px-3 py-2 rounded-xl items-center gap-2 shadow-lg transition-all group hidden"
         >
           <i
             class="fas fa-keyboard group-hover:text-white transition-colors text-blue-400"
@@ -66,7 +476,7 @@
         <button
           id="btn-prev-page"
           title="Voltar página"
-          class="bg-slate-800/80 hover:bg-slate-700 backdrop-blur border border-slate-700 px-2 md:px-3 py-2 rounded-xl flex items-center gap-2 shadow-lg transition-all group"
+          class="bg-slate-800/80 hover:bg-slate-700 backdrop-blur border border-slate-700 px-2 md:px-3 py-2 rounded-xl flex items-center gap-2 shadow-lg transition-all group hidden"
         >
           <i
             class="fas fa-backward-step text-blue-400 group-hover:text-blue-300"
@@ -77,7 +487,7 @@
         <button
           id="btn-skip-current-page"
           title="Pular esta página"
-          class="bg-slate-800/80 hover:bg-slate-700 backdrop-blur border border-slate-700 px-2 md:px-3 py-2 rounded-xl flex items-center gap-2 shadow-lg transition-all group"
+          class="bg-slate-800/80 hover:bg-slate-700 backdrop-blur border border-slate-700 px-2 md:px-3 py-2 rounded-xl flex items-center gap-2 shadow-lg transition-all group hidden"
         >
           <span class="text-white hidden lg:inline">Pular</span>
           <i
@@ -86,7 +496,8 @@
         </button>
 
         <div
-          class="bg-slate-800/80 backdrop-blur border border-slate-700 px-2 md:px-4 py-2 rounded-xl flex items-center gap-1 md:gap-2 shadow-lg"
+          id="stat-page"
+          class="bg-slate-800/80 backdrop-blur border border-slate-700 px-2 md:px-4 py-2 rounded-xl flex items-center gap-1 md:gap-2 shadow-lg hidden"
         >
           <i class="fas fa-book text-blue-400"></i>
           <span class="hidden md:inline">Pág</span>
@@ -94,6 +505,7 @@
         </div>
 
         <div
+          id="stat-acc"
           class="bg-slate-800/80 backdrop-blur border border-slate-700 px-2 md:px-4 py-2 rounded-xl items-center gap-1 md:gap-2 shadow-lg hidden sm:flex"
         >
           <i class="fas fa-bullseye text-green-400"></i>
@@ -103,7 +515,8 @@
         </div>
 
         <div
-          class="bg-slate-800/80 backdrop-blur border border-slate-700 px-2 md:px-4 py-2 rounded-xl flex items-center gap-1 md:gap-2 shadow-lg"
+          id="stat-wpm"
+          class="bg-slate-800/80 backdrop-blur border border-slate-700 px-2 md:px-4 py-2 rounded-xl flex items-center gap-1 md:gap-2 shadow-lg hidden"
         >
           <i class="fas fa-tachometer-alt text-yellow-400"></i>
           <span id="wpm-display" class="text-white font-bold">0</span>
@@ -114,20 +527,48 @@
 
     <div
       id="upload-screen"
-      class="flex flex-col items-center gap-4 transition-all duration-500 z-10 w-full max-w-2xl mt-16 px-4 pb-10 overflow-y-auto no-scrollbar"
+      class="hidden flex-col items-center gap-4 transition-all duration-500 z-10 w-full max-w-3xl mt-24 px-4 pb-10 overflow-y-auto no-scrollbar"
       style="max-height: 85vh"
     >
+      <div class="w-full flex flex-col sm:flex-row gap-4 mb-2">
+        <button
+          id="btn-show-local-leaderboard"
+          class="flex-1 bg-slate-800/80 hover:bg-slate-700 p-4 rounded-2xl border border-slate-600 shadow-lg transition transform hover:scale-[1.02] flex items-center justify-center gap-3 group"
+        >
+          <i
+            class="fas fa-chart-line text-3xl text-green-400 group-hover:text-green-300"
+          ></i>
+          <div class="text-left">
+            <h4 class="text-white font-bold text-lg">Meu Histórico</h4>
+            <p class="text-xs text-slate-400">Acompanhe a sua evolução</p>
+          </div>
+        </button>
+        <button
+          id="btn-show-global-leaderboard"
+          class="flex-1 bg-gradient-to-r from-amber-900/60 to-yellow-900/40 hover:from-amber-800/80 hover:to-yellow-800/60 p-4 rounded-2xl border border-yellow-600/50 shadow-[0_0_15px_rgba(251,191,36,0.15)] transition transform hover:scale-[1.02] flex items-center justify-center gap-3 group"
+        >
+          <i
+            class="fas fa-trophy text-3xl text-yellow-400 group-hover:text-yellow-200 group-hover:scale-110 transition"
+          ></i>
+          <div class="text-left">
+            <h4 class="text-yellow-100 font-bold text-lg">Placar Global</h4>
+            <p class="text-xs text-yellow-500/70">Competição da Turma</p>
+          </div>
+        </button>
+      </div>
+
       <div
         class="w-full bg-slate-800/80 p-5 rounded-2xl border border-slate-700 shadow-xl backdrop-blur-sm"
       >
         <h3
           class="text-slate-300 font-bold mb-4 flex items-center gap-2 border-b border-slate-700 pb-2"
         >
-          <i class="fas fa-bolt text-yellow-400"></i> Treino Rápido
+          <i class="fas fa-bolt text-yellow-400"></i> Treinos Rápidos
+          (Pré-definidos)
         </h3>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
           <button
-            onclick="startPredefined('historia')"
+            onclick="window.startPredefined('historia')"
             class="bg-slate-900/50 p-3 rounded-xl border border-slate-600 hover:border-blue-500 hover:bg-slate-700 transition text-left group"
           >
             <h4
@@ -140,7 +581,7 @@
             </p>
           </button>
           <button
-            onclick="startPredefined('tecnico')"
+            onclick="window.startPredefined('tecnico')"
             class="bg-slate-900/50 p-3 rounded-xl border border-slate-600 hover:border-blue-500 hover:bg-slate-700 transition text-left group"
           >
             <h4
@@ -153,7 +594,7 @@
             </p>
           </button>
           <button
-            onclick="startPredefined('motivacional')"
+            onclick="window.startPredefined('motivacional')"
             class="bg-slate-900/50 p-3 rounded-xl border border-slate-600 hover:border-blue-500 hover:bg-slate-700 transition text-left group"
           >
             <h4
@@ -169,12 +610,10 @@
       </div>
 
       <div
-        class="w-full flex items-center justify-center gap-4 opacity-50 my-2"
+        class="w-full flex items-center justify-center gap-4 opacity-50 my-1"
       >
         <div class="h-px bg-slate-500 flex-1"></div>
-        <span class="text-sm font-bold text-slate-400"
-          >OU SUBIR UM ARQUIVO</span
-        >
+        <span class="text-sm font-bold text-slate-400">OU</span>
         <div class="h-px bg-slate-500 flex-1"></div>
       </div>
 
@@ -189,9 +628,11 @@
             <i class="fas fa-file-pdf text-xl text-white"></i>
           </div>
           <div>
-            <p class="text-lg font-medium text-slate-200">Carregar seu PDF</p>
+            <p class="text-lg font-medium text-slate-200">
+              Carregar PDF do Computador
+            </p>
             <p class="text-xs text-slate-500 hidden md:block">
-              Motor Tesseract IA incluído
+              Livros, resumos ou artigos (A IA lê qualquer um)
             </p>
           </div>
         </div>
@@ -225,7 +666,6 @@
               <option value="hacker">Hacker (Foco)</option>
             </select>
           </div>
-
           <div
             class="flex justify-between items-center bg-slate-900/50 p-2.5 rounded-xl border border-slate-700/50"
           >
@@ -536,6 +976,966 @@
       </div>
     </div>
 
-    <script src="js/app.js"></script>
+    <div
+      id="global-leaderboard-modal"
+      class="fixed inset-0 bg-[#0f172a]/95 backdrop-blur-md z-[100] hidden flex-col items-center p-4 pt-10 overflow-y-auto no-scrollbar"
+    >
+      <button
+        id="btn-close-global-leaderboard"
+        class="absolute top-6 right-6 text-slate-400 hover:text-white transition"
+      >
+        <i class="fas fa-times text-3xl"></i>
+      </button>
+      <div class="w-full max-w-2xl flex flex-col items-center mt-10">
+        <i
+          class="fas fa-globe text-6xl text-blue-400 mb-4 drop-shadow-[0_0_15px_rgba(59,130,246,0.5)]"
+        ></i>
+        <h2
+          class="text-3xl md:text-4xl font-bold text-white mb-6 tracking-wide text-center"
+        >
+          Ranking Global
+        </h2>
+        <div id="reveal-container" class="w-full flex justify-center py-10">
+          <button
+            id="btn-reveal-results"
+            class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xl md:text-2xl font-bold py-4 px-10 rounded-full shadow-[0_0_30px_rgba(59,130,246,0.6)] transform transition hover:scale-110 flex items-center gap-3"
+          >
+            <i class="fas fa-magic"></i> Revelar Top 5 Global!
+          </button>
+        </div>
+        <div
+          id="leaderboard-list"
+          class="w-full space-y-3 hidden flex-col pb-10"
+        ></div>
+      </div>
+    </div>
+
+    <div
+      id="local-leaderboard-modal"
+      class="fixed inset-0 bg-[#0f172a]/95 backdrop-blur-md z-[100] hidden flex-col items-center p-4 pt-10 overflow-y-auto no-scrollbar"
+    >
+      <button
+        id="btn-close-local-leaderboard"
+        class="absolute top-6 right-6 text-slate-400 hover:text-white transition"
+      >
+        <i class="fas fa-times text-3xl"></i>
+      </button>
+      <div class="w-full max-w-2xl flex flex-col items-center mt-10">
+        <i
+          class="fas fa-user-check text-6xl text-green-400 mb-4 drop-shadow-[0_0_15px_rgba(74,222,128,0.5)]"
+        ></i>
+        <h2
+          class="text-3xl md:text-4xl font-bold text-white mb-2 tracking-wide text-center"
+        >
+          Meu Histórico
+        </h2>
+        <p class="text-slate-400 mb-8 text-center">
+          Acompanhe a sua evolução ao longo do tempo
+        </p>
+
+        <div
+          class="w-full bg-slate-800 border border-slate-700 rounded-2xl overflow-hidden shadow-2xl"
+        >
+          <div
+            class="grid grid-cols-3 bg-slate-900/50 p-4 border-b border-slate-700 text-sm font-bold text-slate-400 uppercase tracking-wider"
+          >
+            <div>Data</div>
+            <div class="text-center">Velocidade</div>
+            <div class="text-right">Precisão</div>
+          </div>
+          <div
+            id="local-history-list"
+            class="flex flex-col max-h-[50vh] overflow-y-auto no-scrollbar"
+          ></div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+      import {
+        getFirestore,
+        collection,
+        addDoc,
+        getDocs,
+      } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+      import {
+        getAuth,
+        signInAnonymously,
+        signInWithCustomToken,
+      } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+      const myFirebaseConfig = {
+        apiKey: "AIzaSyB7_G_5ZfgVHvI_wn1VvlQzgcUSwxohG0M",
+        authDomain: "pdf-typer-reader-pro.firebaseapp.com",
+        databaseURL: "https://pdf-typer-reader-pro-default-rtdb.firebaseio.com",
+        projectId: "pdf-typer-reader-pro",
+        storageBucket: "pdf-typer-reader-pro.firebasestorage.app",
+        messagingSenderId: "267936799709",
+        appId: "1:267936799709:web:a4b92c155d9549fcbc7434",
+        measurementId: "G-GMKFLZLL2R",
+      };
+
+      const firebaseConfig =
+        typeof __firebase_config !== "undefined"
+          ? JSON.parse(__firebase_config)
+          : myFirebaseConfig;
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+      const db = getFirestore(app);
+      const appId =
+        typeof __app_id !== "undefined" ? __app_id : "pdf-typer-pro";
+
+      async function initAuth() {
+        try {
+          if (
+            typeof __initial_auth_token !== "undefined" &&
+            __initial_auth_token
+          ) {
+            await signInWithCustomToken(auth, __initial_auth_token);
+          } else {
+            await signInAnonymously(auth);
+          }
+        } catch (error) {
+          console.error("Erro Firebase Auth:", error);
+        }
+      }
+      await initAuth();
+
+      async function saveScoreToDatabase(playerName, wpm, acc) {
+        if (!auth.currentUser) return;
+        try {
+          const colRef = collection(
+            db,
+            "artifacts",
+            appId,
+            "public",
+            "data",
+            "leaderboard",
+          );
+          await addDoc(colRef, {
+            name: playerName,
+            wpm: wpm,
+            acc: acc,
+            timestamp: Date.now(),
+          });
+        } catch (e) {
+          console.error("Erro BD", e);
+        }
+      }
+
+      async function fetchLeaderboardFromDatabase() {
+        if (!auth.currentUser) return [];
+        try {
+          const colRef = collection(
+            db,
+            "artifacts",
+            appId,
+            "public",
+            "data",
+            "leaderboard",
+          );
+          const querySnapshot = await getDocs(colRef);
+          let data = [];
+          querySnapshot.forEach((doc) => data.push(doc.data()));
+          data.sort((a, b) => b.wpm - a.wpm);
+          return data.slice(0, 5).map((item, index) => ({
+            rank: index + 1,
+            name: item.name || "Anónimo",
+            wpm: item.wpm,
+            acc: item.acc,
+          }));
+        } catch (e) {
+          return [];
+        }
+      }
+
+      pdfjsLib.GlobalWorkerOptions.workerSrc =
+        "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+
+      let pdfDoc = null;
+      let currentPage = 1;
+      let totalPages = 1;
+      let originalText = "";
+      let currentIndex = 0;
+      let startTime = null;
+      let errors = 0;
+      let isTypingEnabled = false;
+      let accentPending = false;
+      let isPredefinedMode = false;
+      let currentPlayerName = "";
+
+      const preDefTexts = {
+        historia: `A vila de Eldoria enfrentava a maior seca de sua história. O poço central havia secado completamente. Os moradores tentaram cavar mais fundo, mas encontraram apenas rocha maciça, e o racionamento rigoroso gerou desespero.\nDias se passaram com o calor aumentando e as esperanças diminuindo.\nAté que uma jovem construtora, observando as nuvens escuras sobre as montanhas, decidiu agir. Ela projetou e liderou a construção de um longo aqueduto de bambu.\nApós semanas de trabalho árduo e união da comunidade, a água fresca finalmente chegou à praça, resolvendo o problema e salvando a todos.`,
+        tecnico: `O desenvolvimento front-end moderno exige uma arquitetura sólida e escalável.\nFrameworks baseados em JavaScript facilitam a componentização da interface do usuário.\nAlém disso, o uso de utilitários de estilo permite que a aplicação seja construída de forma ágil.\nAo final, a otimização de performance e a responsividade devem ser sempre uma prioridade para garantir o sucesso.`,
+        motivacional: `O sucesso não é o final, e o fracasso não é fatal: o que realmente conta é a coragem para continuar.\nA jornada de mil milhas começa sempre com um único passo.\nNão tenha medo de desistir do que é bom para ir atrás do que é extraordinário.\nLembre-se de que a persistência é o único caminho verdadeiro para o êxito.`,
+      };
+
+      const loginScreen = document.getElementById("login-screen");
+      const loginNameInput = document.getElementById("login-name-input");
+      const btnLoginSubmit = document.getElementById("btn-login-submit");
+      const mainHeader = document.getElementById("main-header");
+      const displayUserName = document.getElementById("display-user-name");
+      const uploadScreen = document.getElementById("upload-screen");
+      const loaderScreen = document.getElementById("loader-screen");
+      const pageContainer = document.getElementById("page-container");
+      const pageCard = document.getElementById("page-card");
+      const typingArea = document.getElementById("typing-area");
+      const nextPageOverlay = document.getElementById("next-page-overlay");
+      const statsCard = document.getElementById("stats-card");
+      const progressBar = document.getElementById("reading-progress");
+      const keyboardContainer = document.getElementById(
+        "virtual-keyboard-container",
+      );
+      const hiddenMobileInput = document.getElementById("mobile-hidden-input");
+
+      function checkLogin() {
+        const savedName = localStorage.getItem("pdfTyperPlayerName");
+        if (savedName) {
+          currentPlayerName = savedName;
+          finishLoginProcess();
+        } else {
+          loginScreen.classList.remove("hidden");
+        }
+      }
+
+      function finishLoginProcess() {
+        loginScreen.classList.add("fade-out");
+        setTimeout(() => {
+          loginScreen.classList.add("hidden");
+          uploadScreen.classList.remove("hidden");
+          uploadScreen.classList.add("flex");
+
+          mainHeader.classList.remove("hidden");
+          setTimeout(() => mainHeader.classList.remove("opacity-0"), 50);
+          displayUserName.innerText = currentPlayerName;
+        }, 500);
+      }
+
+      btnLoginSubmit.addEventListener("click", () => {
+        const name = loginNameInput.value.trim();
+        if (name.length > 0) {
+          localStorage.setItem("pdfTyperPlayerName", name);
+          currentPlayerName = name;
+          finishLoginProcess();
+        } else {
+          alert("Por favor, insira um nome válido para continuar.");
+        }
+      });
+
+      checkLogin();
+
+      const themeSelector = document.getElementById("theme-selector");
+      const savedTheme = localStorage.getItem("pdfTyperTheme") || "slate";
+      document.documentElement.setAttribute("data-theme", savedTheme);
+      if (themeSelector) themeSelector.value = savedTheme;
+      if (themeSelector)
+        themeSelector.addEventListener("change", (e) => {
+          document.documentElement.setAttribute("data-theme", e.target.value);
+          localStorage.setItem("pdfTyperTheme", e.target.value);
+        });
+
+      const accentMap = {
+        á: { key: "acute", base: "a", reqShift: false },
+        é: { key: "acute", base: "e", reqShift: false },
+        í: { key: "acute", base: "i", reqShift: false },
+        ó: { key: "acute", base: "o", reqShift: false },
+        ú: { key: "acute", base: "u", reqShift: false },
+        à: { key: "acute", base: "a", reqShift: true },
+        è: { key: "acute", base: "e", reqShift: true },
+        ì: { key: "acute", base: "i", reqShift: true },
+        ò: { key: "acute", base: "o", reqShift: true },
+        ù: { key: "acute", base: "u", reqShift: true },
+        ã: { key: "tilde", base: "a", reqShift: false },
+        õ: { key: "tilde", base: "o", reqShift: false },
+        ñ: { key: "tilde", base: "n", reqShift: false },
+        â: { key: "tilde", base: "a", reqShift: true },
+        ê: { key: "tilde", base: "e", reqShift: true },
+        î: { key: "tilde", base: "i", reqShift: true },
+        ô: { key: "tilde", base: "o", reqShift: true },
+        û: { key: "tilde", base: "u", reqShift: true },
+      };
+
+      pageContainer.addEventListener("click", () => {
+        if (isTypingEnabled) {
+          hiddenMobileInput.focus();
+          hiddenMobileInput.value = "";
+        }
+      });
+
+      const btnToggleKeyboard = document.getElementById("btn-toggle-keyboard");
+      if (btnToggleKeyboard) {
+        btnToggleKeyboard.addEventListener("click", () => {
+          document.body.classList.toggle("keyboard-open");
+          if (keyboardContainer.classList.contains("translate-y-full")) {
+            keyboardContainer.classList.remove("translate-y-full");
+            keyboardContainer.classList.add("translate-y-0");
+            updateVirtualKeyboardHighlight();
+          } else {
+            keyboardContainer.classList.add("translate-y-full");
+            keyboardContainer.classList.remove("translate-y-0");
+          }
+        });
+      }
+
+      function updateVirtualKeyboardHighlight() {
+        if (window.innerWidth < 768) return;
+        document
+          .querySelectorAll(".vk-key")
+          .forEach((key) => key.classList.remove("active-target"));
+        if (keyboardContainer.classList.contains("translate-y-full")) return;
+
+        const spans = document.querySelectorAll("#typing-area span");
+        if (currentIndex >= spans.length) return;
+        const currentSpan = spans[currentIndex];
+
+        if (currentSpan.dataset.enter === "true") {
+          const keyEl = document.querySelector(`.vk-key[data-key="enter"]`);
+          if (keyEl) keyEl.classList.add("active-target");
+          return;
+        }
+
+        let targetChar = currentSpan.innerText;
+        let lowerChar = targetChar.toLowerCase();
+
+        if (accentMap[lowerChar]) {
+          const mapping = accentMap[lowerChar];
+          if (!accentPending) {
+            const keyEl = document.querySelector(
+              `.vk-key[data-key="${mapping.key}"]`,
+            );
+            if (keyEl) keyEl.classList.add("active-target");
+            if (mapping.reqShift || targetChar !== lowerChar) {
+              document
+                .querySelectorAll('.vk-key[data-key="shift"]')
+                .forEach((k) => k.classList.add("active-target"));
+            }
+          } else {
+            const baseEl = document.querySelector(
+              `.vk-key[data-key="${mapping.base}"]`,
+            );
+            if (baseEl) baseEl.classList.add("active-target");
+            if (targetChar !== lowerChar) {
+              document
+                .querySelectorAll('.vk-key[data-key="shift"]')
+                .forEach((k) => k.classList.add("active-target"));
+            }
+          }
+        } else {
+          let keyToFind = lowerChar;
+          if (targetChar === " ") keyToFind = "space";
+          const keyEl = document.querySelector(
+            `.vk-key[data-key="${keyToFind}"]`,
+          );
+          if (keyEl) keyEl.classList.add("active-target");
+          if (
+            targetChar !== targetChar.toLowerCase() &&
+            targetChar.match(/[A-ZÇ]/)
+          ) {
+            document
+              .querySelectorAll('.vk-key[data-key="shift"]')
+              .forEach((k) => k.classList.add("active-target"));
+          }
+        }
+      }
+
+      function setupGameUI() {
+        uploadScreen.classList.add("opacity-0");
+        setTimeout(() => {
+          uploadScreen.classList.add("hidden");
+          uploadScreen.classList.remove("flex");
+        }, 500);
+
+        document.getElementById("btn-change-pdf").classList.remove("hidden");
+        document
+          .getElementById("btn-toggle-keyboard")
+          .classList.remove("hidden");
+        document.getElementById("stat-page").classList.remove("hidden");
+        document.getElementById("stat-acc").classList.remove("hidden");
+        document.getElementById("stat-acc").classList.add("sm:flex");
+        document.getElementById("stat-wpm").classList.remove("hidden");
+      }
+
+      window.startPredefined = function (type) {
+        isPredefinedMode = true;
+        pdfDoc = null;
+        totalPages = 1;
+        currentPage = 1;
+        setupGameUI();
+        document.getElementById("loading-page-num").innerText = "Selecionado";
+        document.getElementById("page-display").innerText = `1 / 1`;
+        progressBar.style.width = "0%";
+        document.getElementById("btn-prev-page").classList.add("hidden");
+        document
+          .getElementById("btn-skip-current-page")
+          .classList.add("hidden");
+        prepareGame(preDefTexts[type]);
+      };
+
+      const fileInput = document.getElementById("file-input");
+      if (fileInput) {
+        fileInput.addEventListener("change", async (e) => {
+          const file = e.target.files[0];
+          if (!file) return;
+
+          isPredefinedMode = false;
+          const userStartPage =
+            parseInt(document.getElementById("start-page-input").value) || 1;
+          setupGameUI();
+
+          try {
+            const arrayBuffer = await file.arrayBuffer();
+            pdfDoc = await pdfjsLib.getDocument(arrayBuffer).promise;
+            totalPages = pdfDoc.numPages;
+
+            document.getElementById("btn-prev-page").classList.remove("hidden");
+            document
+              .getElementById("btn-skip-current-page")
+              .classList.remove("hidden");
+
+            currentPage = userStartPage;
+            if (currentPage < 1) currentPage = 1;
+            if (currentPage > totalPages) {
+              alert(
+                `O documento só tem ${totalPages} páginas. Começando na última.`,
+              );
+              currentPage = totalPages;
+            }
+            loadPage(currentPage);
+          } catch (err) {
+            alert("Erro ao ler PDF: " + err.message);
+            location.reload();
+          }
+        });
+      }
+
+      document
+        .getElementById("btn-change-pdf")
+        .addEventListener("click", () => {
+          if (
+            confirm(
+              "Deseja voltar ao início? O seu progresso atual será perdido.",
+            )
+          )
+            location.reload();
+        });
+
+      async function loadPage(pageNum) {
+        if (isPredefinedMode) return;
+
+        isTypingEnabled = false;
+        loaderScreen.classList.remove("hidden");
+        pageContainer.classList.add("hidden");
+        pageCard.classList.remove("exiting", "exiting-reverse", "visible");
+
+        nextPageOverlay.classList.remove("opacity-100", "pointer-events-auto");
+        nextPageOverlay.classList.add("opacity-0", "pointer-events-none");
+        statsCard.classList.remove("scale-100");
+        statsCard.classList.add("scale-90");
+
+        document.getElementById("loading-page-num").innerText = pageNum;
+        document.getElementById("page-display").innerText =
+          `${pageNum} / ${totalPages}`;
+        progressBar.style.width = "0%";
+        document.getElementById("wpm-display").innerText = "0";
+        document.getElementById("acc-display").innerText = "100";
+
+        try {
+          const page = await pdfDoc.getPage(pageNum);
+          const viewport = page.getViewport({ scale: 1.5 });
+          const canvas = document.createElement("canvas");
+          const ctx = canvas.getContext("2d");
+          canvas.width = viewport.width;
+          canvas.height = viewport.height;
+          await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+
+          const worker = await Tesseract.createWorker("por");
+          const { data } = await worker.recognize(canvas);
+          await worker.terminate();
+
+          if (data.text.trim().length < 5) {
+            alert("Página vazia ou ilegível. Tentando próxima...");
+            if (currentPage < totalPages) {
+              currentPage++;
+              loadPage(currentPage);
+              return;
+            }
+          }
+          prepareGame(data.text);
+        } catch (err) {
+          alert("Erro no processo: " + err.message);
+          location.reload();
+        }
+      }
+
+      function cleanText(text) {
+        let t = text.replace(/\|/g, "I").replace(/([a-z])-\n([a-z])/g, "$1$2");
+        const keepAccents = document.getElementById("chk-accents").checked;
+        const keepPunctuation =
+          document.getElementById("chk-punctuation").checked;
+        const keepNumbers = document.getElementById("chk-numbers").checked;
+
+        if (!keepAccents)
+          t = t.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        if (!keepPunctuation)
+          t = t.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()"'\[\]“”‘’]/g, "");
+        if (!keepNumbers) t = t.replace(/[0-9]/g, "");
+
+        return t.replace(/[^\S\r\n]+/g, " ").trim();
+      }
+
+      function prepareGame(rawText) {
+        originalText = cleanText(rawText);
+        currentIndex = 0;
+        errors = 0;
+        startTime = null;
+        accentPending = false;
+        typingArea.innerHTML = "";
+        const lines = originalText.split("\n");
+
+        lines.forEach((line) => {
+          line = line.trim();
+          if (line === "") return;
+          const div = document.createElement("div");
+          div.className = "line-block";
+
+          line.split("").forEach((char) => {
+            const span = document.createElement("span");
+            span.innerText = char;
+            span.className = "pending transition-colors duration-200";
+            div.appendChild(span);
+          });
+
+          const enterSpan = document.createElement("span");
+          enterSpan.innerText = "↵";
+          enterSpan.className =
+            "pending text-slate-500 opacity-40 ml-1 font-mono";
+          enterSpan.dataset.enter = "true";
+          div.appendChild(enterSpan);
+          typingArea.appendChild(div);
+        });
+
+        loaderScreen.classList.add("hidden");
+        pageContainer.classList.remove("hidden");
+
+        setTimeout(() => {
+          pageCard.classList.add("visible");
+          hiddenMobileInput.focus();
+        }, 50);
+
+        updateCursor();
+        isTypingEnabled = true;
+      }
+
+      function processGameInput(keyString) {
+        if (!isTypingEnabled) return;
+        if (!startTime) startTime = new Date();
+
+        const spans = document.querySelectorAll("#typing-area span");
+        if (currentIndex >= spans.length) return;
+
+        if (keyString === "Backspace") {
+          if (currentIndex > 0) {
+            spans[currentIndex].className =
+              "pending transition-colors duration-200";
+            currentIndex--;
+            spans[currentIndex].className =
+              "pending transition-colors duration-200";
+            accentPending = false;
+            updateCursor();
+            updateStats();
+          }
+          return;
+        }
+
+        const targetSpan = spans[currentIndex];
+        const isEnterRequired = targetSpan.dataset.enter === "true";
+        let isMatch = false;
+
+        if (isEnterRequired) {
+          isMatch = keyString === "Enter";
+        } else {
+          const targetChar = targetSpan.innerText;
+          const chkCase = document.getElementById("chk-case");
+          const requireStrictCase = chkCase ? chkCase.checked : false;
+          if (requireStrictCase) {
+            isMatch = keyString === targetChar;
+          } else {
+            isMatch = keyString.toLowerCase() === targetChar.toLowerCase();
+          }
+        }
+
+        if (isMatch) {
+          spans[currentIndex].className = "correct";
+          accentPending = false;
+        } else {
+          spans[currentIndex].className = "incorrect";
+          errors++;
+          accentPending = false;
+        }
+
+        currentIndex++;
+        updateCursor();
+        updateStats();
+
+        if (spans.length > 0) {
+          const progress = (currentIndex / spans.length) * 100;
+          progressBar.style.width = `${progress}%`;
+        }
+
+        if (currentIndex >= spans.length) finishPage();
+      }
+
+      hiddenMobileInput.addEventListener("keydown", (e) => {
+        if (!isTypingEnabled) return;
+        if (
+          e.key === "Dead" ||
+          e.key === "´" ||
+          e.key === "`" ||
+          e.key === "~" ||
+          e.key === "^"
+        ) {
+          accentPending = true;
+          updateVirtualKeyboardHighlight();
+          return;
+        }
+        if (e.key === "Shift") return;
+        if (e.key === "Backspace") {
+          processGameInput("Backspace");
+        } else if (e.key === "Enter") {
+          e.preventDefault();
+          processGameInput("Enter");
+        }
+      });
+
+      hiddenMobileInput.addEventListener("input", (e) => {
+        if (!isTypingEnabled) return;
+        if (
+          e.inputType === "insertLineBreak" ||
+          e.inputType === "deleteContentBackward"
+        ) {
+          hiddenMobileInput.value = "";
+          return;
+        }
+        const val = hiddenMobileInput.value;
+        if (val) {
+          for (let i = 0; i < val.length; i++) {
+            if (val[i] !== "\n") processGameInput(val[i]);
+          }
+        }
+        hiddenMobileInput.value = "";
+      });
+
+      window.addEventListener("keydown", (e) => {
+        if (isTypingEnabled && document.activeElement !== hiddenMobileInput)
+          hiddenMobileInput.focus();
+      });
+
+      function updateCursor() {
+        const spans = document.querySelectorAll("#typing-area span");
+        document
+          .querySelectorAll(".cursor")
+          .forEach((c) => c.classList.remove("cursor"));
+        if (spans[currentIndex]) {
+          spans[currentIndex].classList.add("cursor");
+          spans[currentIndex].scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+          });
+        }
+        updateVirtualKeyboardHighlight();
+      }
+
+      function updateStats() {
+        const time = (new Date() - startTime) / 1000 / 60;
+        if (time > 0 && currentIndex > 0) {
+          const wpm = Math.round(currentIndex / 5 / time);
+          const acc = Math.max(
+            0,
+            Math.round(((currentIndex - errors) / currentIndex) * 100),
+          );
+          document.getElementById("wpm-display").innerText = wpm;
+          document.getElementById("acc-display").innerText = acc;
+          document.getElementById("final-wpm").innerText = wpm;
+          document.getElementById("final-acc").innerText = acc;
+        }
+      }
+
+      function saveLocalHistory(wpm, acc) {
+        let history = JSON.parse(
+          localStorage.getItem("pdfTyperHistory") || "[]",
+        );
+
+        const now = new Date();
+        const dateStr =
+          now.toLocaleDateString("pt-BR") +
+          " " +
+          now.toLocaleTimeString("pt-BR", {
+            hour: "2-digit",
+            minute: "2-digit",
+          });
+
+        history.unshift({ wpm, acc, date: dateStr });
+
+        if (history.length > 50) history = history.slice(0, 50);
+
+        localStorage.setItem("pdfTyperHistory", JSON.stringify(history));
+      }
+
+      function finishPage() {
+        isTypingEnabled = false;
+        hiddenMobileInput.blur();
+
+        const time = (new Date() - startTime) / 1000 / 60;
+        let finalWpm = 0;
+        let finalAcc = 100;
+        if (time > 0 && currentIndex > 0) {
+          finalWpm = Math.round(currentIndex / 5 / time);
+          finalAcc = Math.max(
+            0,
+            Math.round(((currentIndex - errors) / currentIndex) * 100),
+          );
+        }
+
+        if (finalWpm > 0) saveLocalHistory(finalWpm, finalAcc);
+
+        if (currentPlayerName !== "" && finalWpm > 0 && finalWpm <= 300) {
+          saveScoreToDatabase(currentPlayerName, finalWpm, finalAcc);
+        }
+
+        nextPageOverlay.classList.remove("opacity-0", "pointer-events-none");
+        nextPageOverlay.classList.add("opacity-100", "pointer-events-auto");
+        setTimeout(() => statsCard.classList.remove("scale-90"), 100);
+        setTimeout(() => statsCard.classList.add("scale-100"), 100);
+      }
+
+      function advanceToNextPage() {
+        if (isPredefinedMode) {
+          location.reload();
+          return;
+        }
+        if (currentPage < totalPages) {
+          isTypingEnabled = false;
+          pageCard.classList.remove("visible");
+          pageCard.classList.add("exiting");
+          setTimeout(() => {
+            currentPage++;
+            loadPage(currentPage);
+          }, 500);
+        } else {
+          alert("Chegou à última página do livro!");
+        }
+      }
+
+      function returnToPreviousPage() {
+        if (isPredefinedMode) return;
+        if (currentPage > 1) {
+          isTypingEnabled = false;
+          pageCard.classList.remove("visible");
+          pageCard.classList.add("exiting-reverse");
+          setTimeout(() => {
+            currentPage--;
+            loadPage(currentPage);
+          }, 500);
+        } else {
+          alert("Você já está na primeira página deste documento!");
+        }
+      }
+
+      document
+        .getElementById("btn-next-page")
+        .addEventListener("click", advanceToNextPage);
+      document
+        .getElementById("btn-skip-current-page")
+        .addEventListener("click", () => {
+          if (currentIndex > 50) {
+            if (confirm("Deseja pular? O progresso desta folha será perdido."))
+              advanceToNextPage();
+          } else {
+            advanceToNextPage();
+          }
+        });
+      document.getElementById("btn-prev-page").addEventListener("click", () => {
+        if (currentIndex > 50) {
+          if (
+            confirm(
+              "Deseja voltar? O progresso desta folha atual será perdido.",
+            )
+          )
+            returnToPreviousPage();
+        } else {
+          returnToPreviousPage();
+        }
+      });
+
+      const btnShowGlobalLeaderboard = document.getElementById(
+        "btn-show-global-leaderboard",
+      );
+      const btnCloseGlobalLeaderboard = document.getElementById(
+        "btn-close-global-leaderboard",
+      );
+      const globalLeaderboardModal = document.getElementById(
+        "global-leaderboard-modal",
+      );
+      const btnRevealResults = document.getElementById("btn-reveal-results");
+      const leaderboardList = document.getElementById("leaderboard-list");
+      const revealContainer = document.getElementById("reveal-container");
+
+      if (btnShowGlobalLeaderboard) {
+        btnShowGlobalLeaderboard.addEventListener("click", () => {
+          globalLeaderboardModal.classList.remove("hidden");
+          globalLeaderboardModal.classList.add("flex");
+          leaderboardList.innerHTML = "";
+          leaderboardList.classList.add("hidden");
+          revealContainer.classList.remove("hidden");
+        });
+      }
+
+      btnCloseGlobalLeaderboard.addEventListener("click", () => {
+        globalLeaderboardModal.classList.add("hidden");
+        globalLeaderboardModal.classList.remove("flex");
+      });
+
+      btnRevealResults.addEventListener("click", async () => {
+        revealContainer.classList.add("hidden");
+        leaderboardList.classList.remove("hidden");
+
+        leaderboardList.innerHTML = `<p class="text-center text-slate-400 animate-pulse"><i class="fas fa-spinner fa-spin"></i> Conectando ao Servidor...</p>`;
+
+        let realLeaderboardData = await fetchLeaderboardFromDatabase();
+        if (realLeaderboardData.length === 0) {
+          realLeaderboardData = [
+            { rank: 1, name: "Ainda Vazio...", wpm: 0, acc: 0 },
+          ];
+        }
+
+        leaderboardList.innerHTML = "";
+        const reversedData = [...realLeaderboardData].reverse();
+        let delayMultiplier = 0;
+
+        reversedData.forEach((player, index) => {
+          setTimeout(() => {
+            const itemDiv = document.createElement("div");
+            let rankClass = "rank-other text-slate-300";
+            let icon = `<span class="text-xl font-bold w-8 text-center text-slate-500">${player.rank}º</span>`;
+
+            if (player.rank === 1) {
+              rankClass = "rank-1 text-yellow-100";
+              icon = `<i class="fas fa-trophy text-3xl text-yellow-400 w-8 text-center drop-shadow-[0_0_8px_rgba(250,204,21,0.8)]"></i>`;
+            }
+            if (player.rank === 2) {
+              rankClass = "rank-2 text-slate-100";
+              icon = `<i class="fas fa-medal text-2xl text-slate-300 w-8 text-center"></i>`;
+            }
+            if (player.rank === 3) {
+              rankClass = "rank-3 text-orange-100";
+              icon = `<i class="fas fa-award text-2xl text-orange-400 w-8 text-center"></i>`;
+            }
+
+            itemDiv.className = `reveal-item flex items-center justify-between p-4 rounded-xl shadow-lg ${rankClass}`;
+            itemDiv.innerHTML = `
+                      <div class="flex items-center gap-4">
+                          ${icon}
+                          <span class="font-bold text-lg md:text-xl tracking-wide">${player.name}</span>
+                      </div>
+                      <div class="flex items-center gap-6 font-mono">
+                          <div class="text-center">
+                              <span class="text-[10px] uppercase tracking-wider opacity-70 block leading-none mb-1">WPM</span>
+                              <span class="text-2xl font-bold text-blue-400">${player.wpm}</span>
+                          </div>
+                          <div class="text-center hidden sm:block">
+                              <span class="text-[10px] uppercase tracking-wider opacity-70 block leading-none mb-1">ACC</span>
+                              <span class="text-xl font-bold text-green-400">${player.acc}%</span>
+                          </div>
+                      </div>
+                  `;
+            leaderboardList.prepend(itemDiv);
+
+            if (index === reversedData.length - 1 && player.wpm > 0)
+              triggerConfetti();
+          }, delayMultiplier * 800);
+          delayMultiplier++;
+        });
+      });
+
+      function triggerConfetti() {
+        var duration = 3.5 * 1000;
+        var animationEnd = Date.now() + duration;
+        var defaults = {
+          startVelocity: 30,
+          spread: 360,
+          ticks: 60,
+          zIndex: 10000,
+        };
+        function randomInRange(min, max) {
+          return Math.random() * (max - min) + min;
+        }
+        var interval = setInterval(function () {
+          var timeLeft = animationEnd - Date.now();
+          if (timeLeft <= 0) return clearInterval(interval);
+          var particleCount = 50 * (timeLeft / duration);
+          confetti(
+            Object.assign({}, defaults, {
+              particleCount,
+              origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
+            }),
+          );
+          confetti(
+            Object.assign({}, defaults, {
+              particleCount,
+              origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
+            }),
+          );
+        }, 250);
+      }
+
+      const btnShowLocalLeaderboard = document.getElementById(
+        "btn-show-local-leaderboard",
+      );
+      const btnCloseLocalLeaderboard = document.getElementById(
+        "btn-close-local-leaderboard",
+      );
+      const localLeaderboardModal = document.getElementById(
+        "local-leaderboard-modal",
+      );
+      const localHistoryList = document.getElementById("local-history-list");
+
+      if (btnShowLocalLeaderboard) {
+        btnShowLocalLeaderboard.addEventListener("click", () => {
+          localLeaderboardModal.classList.remove("hidden");
+          localLeaderboardModal.classList.add("flex");
+          renderLocalHistory();
+        });
+      }
+
+      btnCloseLocalLeaderboard.addEventListener("click", () => {
+        localLeaderboardModal.classList.add("hidden");
+        localLeaderboardModal.classList.remove("flex");
+      });
+
+      function renderLocalHistory() {
+        localHistoryList.innerHTML = "";
+        const history = JSON.parse(
+          localStorage.getItem("pdfTyperHistory") || "[]",
+        );
+
+        if (history.length === 0) {
+          localHistoryList.innerHTML = `<div class="p-6 text-center text-slate-500">Ainda não fez nenhum treino. O seu histórico aparecerá aqui!</div>`;
+          return;
+        }
+
+        history.forEach((session, index) => {
+          const bgClass = index % 2 === 0 ? "bg-slate-800" : "bg-slate-800/50";
+          const item = document.createElement("div");
+          item.className = `grid grid-cols-3 p-4 border-b border-slate-700/50 hover:bg-slate-700 transition ${bgClass}`;
+          item.innerHTML = `
+                  <div class="text-sm text-slate-300 flex items-center">${session.date}</div>
+                  <div class="text-center font-mono font-bold text-yellow-400 text-lg">${session.wpm}</div>
+                  <div class="text-right font-mono font-bold text-green-400 text-lg">${session.acc}%</div>
+              `;
+          localHistoryList.appendChild(item);
+        });
+      }
+    </script>
   </body>
 </html>
